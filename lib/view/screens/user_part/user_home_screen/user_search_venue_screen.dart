@@ -18,37 +18,43 @@ class UserSearchVenueScreen extends StatelessWidget {
   UserSearchVenueScreen({super.key});
 
   final UserAllSportsController userAllSportsController = Get.put(UserAllSportsController());
-  final String selectedSportsType = Get.arguments ?? "";
 
   @override
   Widget build(BuildContext context) {
-
+    final String selectedSportsType = Get.arguments;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(userAllSportsController.sportsVenueGroups.isEmpty){
-        userAllSportsController.allSports();
-      }
+      userAllSportsController.allSports(filter: selectedSportsType);
     });
 
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: CustomRoyelAppbar(leftIcon: true, titleName: "Search"),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
+
+            /// SEARCH FIELD
             CustomTextField(
               fillColor: AppColors.white,
               fieldBorderColor: AppColors.greyLight,
               prefixIcon: Icon(Icons.search, color: AppColors.greyLight),
               hintText: "Search",
               hintStyle: TextStyle(color: AppColors.greyLight),
+              onChanged: (value) {
+                userAllSportsController.allSports(filter: value);
+              },
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
+
+            /// TITLE + FILTER
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomText(
-                  text: "RESULTS FOR '${selectedSportsType.isNotEmpty ? selectedSportsType : 'VENUE'}'",
+                  text:
+                  "RESULTS FOR '${selectedSportsType.isNotEmpty ? selectedSportsType : 'VENUE'}'",
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                 ),
@@ -77,40 +83,36 @@ class UserSearchVenueScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10),
 
+            const SizedBox(height: 10),
+
+            /// VENUE LIST
             Expanded(
               child: Obx(() {
+
                 if (userAllSportsController.isLoading.value) {
-                  return const Center(
-                    child: CustomLoader(),
-                  );
+                  return const Center(child: CustomLoader());
                 }
 
-                SportsVenueGroup? targetGroup;
-                try {
-                  targetGroup = userAllSportsController.sportsVenueGroups.firstWhere(
-                        (group) => group.sportsType.toUpperCase() == selectedSportsType.toUpperCase(),
-                  );
-                } catch (e) {
-                  targetGroup = null;
-                }
-
-                if (targetGroup == null || targetGroup.venues.isEmpty) {
+                if (userAllSportsController.sportsVenueGroups.isEmpty) {
                   return Center(
                     child: CustomText(
-                      text: "No venues found for $selectedSportsType",
-                      color: AppColors.greyLight,
+                      text: "No venues found",
+                      color: AppColors.grey,fontSize: 16,
                     ),
                   );
                 }
 
-                final venuesList = targetGroup.venues;
+                /// flatten all venues from groups
+                final venuesList = userAllSportsController.sportsVenueGroups
+                    .expand((group) => group.venues)
+                    .toList();
 
                 return ListView.builder(
-                  padding: EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.only(bottom: 20),
                   itemCount: venuesList.length,
                   itemBuilder: (context, index) {
+
                     final venue = venuesList[index];
 
                     return CustomResultsVenueContainer(
@@ -123,8 +125,8 @@ class UserSearchVenueScreen extends StatelessWidget {
                       imageUrl: venue.venueImage,
                       onTap: () {
                         Get.toNamed(
-                            AppRoutes.userVenueDetailsScreen,
-                            arguments: venue.id
+                          AppRoutes.userVenueDetailsScreen,
+                          arguments: venue.id,
                         );
                       },
                     );

@@ -20,15 +20,7 @@ class SportsTypeController extends GetxController {
       isLoading.value = true;
 
       final response = await ApiClient.getData(ApiUrl.getSportsTypes);
-
-      /// 🔥 IMPORTANT FIX
-      final Map<String, dynamic> jsonResponse =
-      response is Map<String, dynamic>
-          ? response
-          : response.body;
-
-      print("SPORT API RESPONSE => $jsonResponse");
-
+      final Map<String, dynamic> jsonResponse = response is Map<String, dynamic> ? response : response.body;
       final model = SportsTypeResponseModel.fromJson(jsonResponse);
 
       sportsList.assignAll(model.data?.data ?? []);

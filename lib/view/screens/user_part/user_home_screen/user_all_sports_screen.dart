@@ -14,12 +14,15 @@ import '../../../components/custom_royel_appbar/custom_royel_appbar.dart';
 import '../../../components/custom_text/custom_text.dart';
 import '../../../components/custom_text_field/custom_text_field.dart';
 
-class UserAllSportsScreen extends StatelessWidget {UserAllSportsScreen({super.key});
-
+class UserAllSportsScreen extends StatelessWidget {
+  UserAllSportsScreen({super.key});
   final SportsTypeController sportsTypeController = Get.put(SportsTypeController());
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      sportsTypeController.getAllSports();
+    });
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: CustomRoyelAppbar(leftIcon: true, titleName: "All Sports"),
@@ -81,15 +84,8 @@ class UserAllSportsScreen extends StatelessWidget {UserAllSportsScreen({super.ke
                 if (sportsTypeController.isLoading.value) {
                   return const Center(child: CustomLoader());
                 }
-
-                /// 🔥 DEBUG VIEW
                 if (sportsTypeController.sportsList.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      "No sports found (API returned empty list)",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  );
+                  return const Center(child: Text("No sports found (API returned empty list)", style: TextStyle(color: Colors.red)),);
                 }
 
                 return GridView.builder(
@@ -106,17 +102,12 @@ class UserAllSportsScreen extends StatelessWidget {UserAllSportsScreen({super.ke
 
                     return GestureDetector(
                       onTap: () {
-                        Get.toNamed(
-                          AppRoutes.userSearchVenueScreen,
-                          arguments: sport.sportName,
-                        );
+                        Get.toNamed(AppRoutes.userSearchVenueScreen, arguments: sport.sportName,);
                       },
                       child: Stack(
                         children: [
                           CustomNetworkImage(
-                            imageUrl: sport.sportsImage?.isNotEmpty == true
-                                ? sport.sportsImage!
-                                : AppConstants.sports,
+                            imageUrl: sport.sportsImage?.isNotEmpty == true ? sport.sportsImage! : AppConstants.sports,
                             height: 190.h,
                             width: MediaQuery.sizeOf(context).width / 2.2,
                             borderRadius: const BorderRadius.all(Radius.circular(13)),

@@ -10,22 +10,13 @@ import '../model/all_sports_model.dart';
 
 class UserAllSportsController extends GetxController{
 
-  var sportsVenueGroups = <SportsVenueGroup>[].obs;
-  var isLoading = false.obs;
-  var isLoadMore = false.obs;
-  int currentPage = 1;
-  int totalPage = 1;
-  var currentSliderIndex = 0.obs;
 
   /// SORT
   RxString selectedSort = ''.obs;
 
   /// SPORTS (Single Selection er jonno String bebohar kora hoyeche)
   RxString selectedSport = ''.obs;
-  final List<String> sportsList = [
-    "FOOTBALL", "TENNIS", "BADMINTON", "PICKLEBALL",
-    "SWIMMING", "RUGBY", "PILATES", "TAKRAW"
-  ];
+  final List<String> sportsList = ["FOOTBALL", "TENNIS", "BADMINTON", "PICKLEBALL", "SWIMMING", "RUGBY", "PILATES", "TAKRAW"];
 
   /// LOCATION (Single Selection er jonno String bebohar kora hoyeche)
   RxString selectedLocation = ''.obs;
@@ -70,15 +61,16 @@ class UserAllSportsController extends GetxController{
     reset();
     super.onClose();
   }
+  // all sport filter
+  var sportsVenueGroups = <SportsVenueGroup>[].obs;
+  var isLoading = false.obs;
+  var isLoadMore = false.obs;
+  int currentPage = 1;
+  int totalPage = 1;
+  var currentSliderIndex = 0.obs;
 
 
-  @override
-  void onInit() {
-    super.onInit();
-    allSports();
-  }
-
-  Future<void> allSports({bool loadMore = false}) async {
+  Future<void> allSports({bool loadMore = false, String? filter}) async {
     if (isLoading.value || isLoadMore.value) return;
 
     try {
@@ -86,19 +78,18 @@ class UserAllSportsController extends GetxController{
         if (currentPage >= totalPage) return;
         isLoadMore.value = true;
         currentPage++;
-      } else {
+      }
+      else {
         isLoading.value = true;
         currentPage = 1;
         sportsVenueGroups.clear();
       }
 
-      final response = await ApiClient.getData(ApiUrl.allSports(page: currentPage.toString()));
+      final url = filter != null && filter.isNotEmpty ? ApiUrl.allSports(page: currentPage.toString(), sportName: filter) : ApiUrl.allSports(page: currentPage.toString(),);
+      debugPrint("Calling URL: $url");
+      final response = await ApiClient.getData(url);
 
-
-      final Map<String, dynamic> jsonResponse =
-      response.body is String
-          ? jsonDecode(response.body)
-          : response.body;
+      final Map<String, dynamic> jsonResponse = response.body is String ? jsonDecode(response.body) : response.body;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
 
@@ -107,7 +98,18 @@ class UserAllSportsController extends GetxController{
         final meta = venueResponse.data.meta;
         totalPage = (meta.total / meta.limit).ceil();
 
-        sportsVenueGroups.addAll(venueResponse.data.data);
+        var newGroups = venueResponse.data.data;
+
+        if (!loadMore) {
+          // Refresh hole puro list reset
+          sportsVenueGroups.assignAll(newGroups);
+        } else {
+          // Load more hole duplicate check
+          final existingTypes = sportsVenueGroups.map((g) => g.sportsType).toSet();
+          final uniqueNewGroups = newGroups.where((g) => !existingTypes.contains(g.sportsType)).toList();
+
+          sportsVenueGroups.addAll(uniqueNewGroups);
+        }
 
       } else {
         showCustomSnackBar(

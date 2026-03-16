@@ -63,8 +63,7 @@ class UserHomeScreen extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 children: [
                   Obx(() {
-                    final name =
-                        vendorProfileController.userProfileModel.value.fullName;
+                    final name = vendorProfileController.userProfileModel.value.fullName;
                     return CustomText(
                       text: "HI $name!",
                       fontSize: 18,
@@ -85,26 +84,19 @@ class UserHomeScreen extends StatelessWidget {
                   Obx(() {
                     // final sportsController = Get.find<SportsTypeController>();
 
-                    final displayList = sportsController.sportsList.toList()
-                      ..sort((a, b) {
-                        if (a.updatedAt == null || b.updatedAt == null)
-                          return 0;
+                    final displayList = sportsController.sportsList.toList()..sort((a, b) {
+                        if (a.updatedAt == null || b.updatedAt == null) return 0;
                         return b.updatedAt!.compareTo(a.updatedAt!);
                       });
 
                     final trendingList = displayList.take(3).toList();
 
                     if (sportsController.isLoading.value) {
-                      return SizedBox(
-                        height: 220.h,
-                        child: const Center(child: CustomLoader()),
-                      );
+                      return SizedBox(height: 220.h, child: const Center(child: CustomLoader()));
                     }
-
                     if (trendingList.isEmpty) return const SizedBox.shrink();
 
-                    return SizedBox(
-                      height: 220.h,
+                    return SizedBox(height: 220.h,
                       child: PageView.builder(
                         itemCount: trendingList.length,
                         controller: PageController(viewportFraction: 0.95),
@@ -116,10 +108,7 @@ class UserHomeScreen extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 8),
                             child: GestureDetector(
                               onTap: () {
-                                Get.toNamed(
-                                  AppRoutes.userSearchVenueScreen,
-                                  arguments: sportData.sportName,
-                                );
+                                Get.toNamed(AppRoutes.userSearchVenueScreen, arguments: sportData.sportName,);
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(13),
@@ -127,9 +116,7 @@ class UserHomeScreen extends StatelessWidget {
                                   children: [
                                     /// Background Image
                                     CustomNetworkImage(
-                                      imageUrl:
-                                          sportData.sportsImage ??
-                                          AppConstants.sports,
+                                      imageUrl: sportData.sportsImage ?? AppConstants.sports,
                                       height: 220.h,
                                       width: double.infinity,
                                       borderRadius: BorderRadius.circular(13),
@@ -141,18 +128,13 @@ class UserHomeScreen extends StatelessWidget {
                                         gradient: LinearGradient(
                                           begin: Alignment.topCenter,
                                           end: Alignment.bottomCenter,
-                                          colors: [
-                                            Colors.transparent,
-                                            Colors.black.withOpacity(0.7),
-                                          ],
+                                          colors: [Colors.transparent, Colors.black.withOpacity(0.7),],
                                         ),
                                       ),
                                     ),
 
                                     /// Badge
-                                    Positioned(
-                                      left: 15,
-                                      top: 15,
+                                    Positioned(left: 15, top: 15,
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 12,

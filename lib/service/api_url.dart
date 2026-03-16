@@ -19,7 +19,11 @@ class ApiUrl {
   static const String updateProfile = "/users/update";
   static const String vendorProfile = "/users/my-profile";
   static const String getSportsTypes = "/sports-types";
-  static String allSports({required String page}) => "/venues/group-by-sports-type?limit=10&page=$page";
+  static String allSports({String? page, String? sportName}) {
+    String url = "/venues/group-by-sports-type?page=$page&limit=10";
+    if (sportName != null && sportName.isNotEmpty) {url += "&searchTerm=$sportName";}
+    return url;
+  }
   static String filterSports({required String page, required String filter}) => "/venues?page=$page&limit=3&sportsType=$filter";
   static String bookingsByStatus({required String status}) => "/venue-bookings/specific-user-bookings?filter=${status.toLowerCase()}";
   static String vendorBookingsByStatus({required String status}) => "/venue-bookings/specific-vendor-bookings?filter=${status.toLowerCase()}";
