@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "102793503660",
+    "project_id": "izz-notification-fcm",
+    "storage_bucket": "izz-notification-fcm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102793503660:android:d1e83d4b620daad02b1009",
+        "android_client_info": {
+          "package_name": "com.izz_sports.izz_atlas_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVK2WCcJbogHxV4mZG0T-4SMo6hL_qNbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
