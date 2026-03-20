@@ -51,17 +51,11 @@ class UserHomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            CustomTextField(
-              fillColor: AppColors.white,
-              fieldBorderColor: AppColors.greyLight,
-              prefixIcon: Icon(Icons.search, color: AppColors.greyLight),
-              hintText: "Search",
-              hintStyle: TextStyle(color: AppColors.greyLight),
-            ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
+                  //name
                   Obx(() {
                     final name = vendorProfileController.userProfileModel.value.fullName;
                     return CustomText(
@@ -80,7 +74,7 @@ class UserHomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     bottom: 20,
                   ),
-
+                  //banner section
                   Obx(() {
                     // final sportsController = Get.find<SportsTypeController>();
 
