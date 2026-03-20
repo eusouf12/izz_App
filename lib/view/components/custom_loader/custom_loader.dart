@@ -11,7 +11,7 @@ class CustomLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SpinKitThreeBounce(
-        color: AppColors.primary,
+        color: AppColors.blue,
         // color: AppColors.appBarBackground,
         size: 40.h,
       ),

@@ -11,11 +11,16 @@ import '../../../../utils/app_colors/app_colors.dart';
 import 'user_home_controller/booking_controller.dart';
 
 class BookYourSlotScreen extends StatelessWidget {
-  const BookYourSlotScreen({super.key});
+  BookYourSlotScreen({super.key});
+  final BookingController controller = Get.put(BookingController());
+  final  argument = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
-    final BookingController controller = Get.put(BookingController());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+    });
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -93,7 +98,7 @@ class BookYourSlotScreen extends StatelessWidget {
               List<String> currentSlots = controller.getAvailableSlots();
 
               if (controller.detailsController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CustomLoader());
               }
 
               if (currentSlots.isEmpty) {
@@ -145,7 +150,7 @@ class BookYourSlotScreen extends StatelessWidget {
               List<String> dynamicCourts = controller.getDynamicCourts();
 
               if (controller.detailsController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CustomLoader());
               }
 
               if (dynamicCourts.isEmpty) {
@@ -184,25 +189,16 @@ class BookYourSlotScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             // --- BOOK BUTTON ---
-            Obx(() => controller.isLoading.value
-                ? const Center(child: CustomLoader())
-                : CustomButton(
-              onTap: controller.bookSlot,
-              title: "BOOK NOW",
-              textColor: AppColors.white,
-            ),
+            Obx(
+                  () => controller.isLoading.value
+                  ? const Center(child: CustomLoader())
+                  : CustomButton(
+                onTap: controller.bookSlot,
+                title: "BOOK NOW",
+                textColor: AppColors.white,
+              ),
             ),
 
-            const SizedBox(height: 16),
-            CustomButtonTwo(
-              onTap: () {},
-              textColor: AppColors.blue,
-              title: "CHAT WITH VENDOR",
-              isBorder: true,
-              borderWidth: 1,
-              fillColor: AppColors.white,
-              borderColor: AppColors.blue,
-            ),
           ],
         ),
       ),

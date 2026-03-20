@@ -21,7 +21,7 @@ class UserSearchVenueScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String selectedSportsType = Get.arguments;
+    final  selectedSportsType = Get.arguments;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userAllSportsController.allSports(filter: selectedSportsType);
     });
@@ -104,9 +104,7 @@ class UserSearchVenueScreen extends StatelessWidget {
                 }
 
                 /// flatten all venues from groups
-                final venuesList = userAllSportsController.sportsVenueGroups
-                    .expand((group) => group.venues)
-                    .toList();
+                final venuesList = userAllSportsController.sportsVenueGroups.expand((group) => group.venues).toList();
 
                 return ListView.builder(
                   padding: const EdgeInsets.only(bottom: 20),

@@ -71,9 +71,7 @@ class UserVenueDetailsScreen extends StatelessWidget {
                 ),
 
                 CustomNetworkImage(
-                  imageUrl: venue.venueImage.isNotEmpty
-                      ? venue.venueImage
-                      : AppConstants.banner,
+                  imageUrl: venue.venueImage.isNotEmpty ? venue.venueImage : AppConstants.banner,
                   height: 220,
                   width: MediaQuery.of(context).size.width,
                   borderRadius: BorderRadius.circular(17),
@@ -200,25 +198,20 @@ class UserVenueDetailsScreen extends StatelessWidget {
                   text: "VENUE INFORMATION",
                   onTap: controller.toggleVenueInfo,
                 ),
-                Center(
-                    child:
-                    CustomImage(imageSrc: AppIcons.arrowDown)),
+                Center(child: CustomImage(imageSrc: AppIcons.arrowDown)),
+                //========================venue inf  ========================
                 Obx(() => controller.isVenueInfoOpen.value
                     ? venueInformationWidget(venue.description)
                     : const SizedBox()),
 
                 const SizedBox(height: 20),
-
+                //======================== Book BUTTON  ========================
                 CustomButton(
-                  onTap: () => Get.toNamed(
-                      AppRoutes.bookYourSlotScreen,
-                      arguments: venue),
+                  onTap: () => Get.toNamed(AppRoutes.bookYourSlotScreen, arguments: venue.id),
                   title: "BOOK NOW",
                   textColor: AppColors.white,
                 ),
-
                 const SizedBox(height: 16),
-
                 //======================== CHAT BUTTON  ========================
                 CustomButtonTwo(
                   onTap: () {
@@ -230,8 +223,7 @@ class UserVenueDetailsScreen extends StatelessWidget {
                         'userName': data?.person2.fullName,
                         'userImage': data?.person2.profileImage,
                       },
-                    )
-                        : showChatAgendaModal(context, venue.vendorId);
+                    ) : showChatAgendaModal(context, venue.vendorId);
                   },
                   title: "CHAT WITH VENDOR",
                   textColor: AppColors.blue,

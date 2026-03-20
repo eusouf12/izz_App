@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
 import '../../../../../service/api_url.dart';
+import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/app_const/app_const.dart';
 import '../../../../components/custom_loader/custom_loader.dart';
 import '../../../../components/custom_netwrok_image/custom_network_image.dart';
@@ -137,8 +138,7 @@ class ChatInboxScreen extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          border:
-                          Border.all(color: const Color(0xFF4DB6AC)),
+                          border: Border.all(color: AppColors.blue),
                         ),
                         child: Row(
                           children: [
@@ -154,8 +154,7 @@ class ChatInboxScreen extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.image_outlined,
-                                  color: Color(0xFF4DB6AC)),
+                              icon: const Icon(Icons.image_outlined, color:AppColors.blue),
                               onPressed:
                               controller.pickImagesFromGallery,
                             ),
@@ -176,11 +175,9 @@ class ChatInboxScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(
-                              color: const Color(0xFF4DB6AC)),
+                          border: Border.all(color:AppColors.blue),
                         ),
-                        child: const Icon(Icons.send_outlined,
-                            color: Color(0xFF4DB6AC)),
+                        child: const Icon(Icons.send_outlined, color: AppColors.blue),
                       ),
                     ),
                   ],
