@@ -21,7 +21,7 @@ class CustomNearbyContainer extends StatelessWidget {
             onTap: onTap,
             child: CustomNetworkImage(
               imageUrl: imageUrl ?? AppConstants.ntrition,
-              height: 170.h,
+              height: 160.h,
               width: MediaQuery.sizeOf(context).width,
               borderRadius: BorderRadius.circular(13),
             ),

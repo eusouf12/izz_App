@@ -42,8 +42,7 @@ class UserVenueDetailsScreen extends StatelessWidget {
         }
 
         if (controller.venueDetails.value == null) {
-          return const Center(
-              child: CustomText(text: "No venue details found."));
+          return const Center(child: CustomText(text: "No venue details found."));
         }
 
         final venue = controller.venueDetails.value!;
@@ -89,12 +88,9 @@ class UserVenueDetailsScreen extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.star,
-                            color: Colors.amber, size: 18),
+                        const Icon(Icons.star, color: Colors.amber, size: 18),
                         CustomText(
-                          text: venue.venueRating.isNotEmpty
-                              ? venue.venueRating
-                              : "0.0",
+                          text: venue.venueRating.isNotEmpty ? venue.venueRating : "0.0",
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: Colors.amber,
@@ -102,7 +98,7 @@ class UserVenueDetailsScreen extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () =>
-                              Get.toNamed(AppRoutes.userReviewScreen, arguments: venue.id),
+                              Get.toNamed(AppRoutes.userReviewScreen,  arguments: venue.id,),
                           child: CustomText(
                             text:
                             "(${venue.venueReviewCount} Review)",

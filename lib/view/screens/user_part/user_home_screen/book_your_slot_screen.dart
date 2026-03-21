@@ -13,7 +13,7 @@ import 'user_home_controller/booking_controller.dart';
 class BookYourSlotScreen extends StatelessWidget {
   BookYourSlotScreen({super.key});
   final BookingController controller = Get.put(BookingController());
-  final  argument = Get.arguments;
+  final   argument = Get.arguments;
 
   @override
   Widget build(BuildContext context) {

@@ -43,41 +43,31 @@ class UserMyBookingsScreen extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 /// First loading
-                if (controller.isLoading.value &&
-                    controller.bookings.isEmpty) {
+                if (controller.isLoading.value && controller.bookings.isEmpty) {
                   return const Center(child: CustomLoader());
                 }
 
                 /// Empty state
                 if (controller.bookings.isEmpty) {
                   return Center(
-                    child: Text(
-                      "No ${controller.tabNameList[controller.currentIndex.value]} bookings found",
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    child: Text("No ${controller.tabNameList[controller.currentIndex.value]} bookings found",
+                      style: const TextStyle(color: AppColors.primary, fontSize: 16, fontWeight: FontWeight.w500,),
                     ),
                   );
                 }
 
                 return NotificationListener<ScrollNotification>(
                   onNotification: (scrollInfo) {
-                    if (!controller.isMoreLoading.value &&
-                        scrollInfo.metrics.pixels ==
-                            scrollInfo.metrics.maxScrollExtent) {
+                    if (!controller.isMoreLoading.value && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
                       controller.fetchBookings(
-                        controller
-                            .tabNameList[controller.currentIndex.value],
+                        controller.tabNameList[controller.currentIndex.value],
                       );
                     }
                     return true;
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.only(top: 20),
-                    itemCount: controller.bookings.length +
-                        (controller.isMoreLoading.value ? 1 : 0),
+                    itemCount: controller.bookings.length + (controller.isMoreLoading.value ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == controller.bookings.length) {
                         return const Padding(
@@ -92,8 +82,7 @@ class UserMyBookingsScreen extends StatelessWidget {
                       /// Date + time format
                       String dateTime = "";
                       if (booking.date != null && booking.timeSlot != null) {
-                        dateTime =
-                        "${booking.date} • ${booking.timeSlot?.from} - ${booking.timeSlot?.to}";
+                        dateTime = "${booking.date} • ${booking.timeSlot?.from} - ${booking.timeSlot?.to}";
                       }
 
                       ///================ Requested / Ongoing / Completed =================
