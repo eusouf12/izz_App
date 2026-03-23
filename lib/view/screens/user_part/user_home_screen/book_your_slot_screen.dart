@@ -13,7 +13,7 @@ import 'user_home_controller/booking_controller.dart';
 class BookYourSlotScreen extends StatelessWidget {
   BookYourSlotScreen({super.key});
   final BookingController controller = Get.put(BookingController());
-  final   argument = Get.arguments;
+  final  venueId = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +95,8 @@ class BookYourSlotScreen extends StatelessWidget {
             ),
 
             Obx(() {
-              List<String> currentSlots = controller.getAvailableSlots();
+              // এখন এটি ম্যাপের লিস্ট পাবে
+              List<Map<String, String>> currentSlots = controller.getAvailableSlots();
 
               if (controller.detailsController.isLoading.value) {
                 return const Center(child: CustomLoader());
@@ -111,21 +112,29 @@ class BookYourSlotScreen extends StatelessWidget {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: currentSlots.map((time) {
-                    bool isSelected = controller.selectedTime.value == time;
+                  children: currentSlots.map((slot) {
+                    // শুরুতে এবং শেষের সময় মিলিয়ে স্ট্রিং তৈরি
+                    String startTime = slot["from"] ?? "";
+                    String endTime = slot["to"] ?? "";
+                    String displayTime = "$startTime - $endTime";
+
+                    // সিলেকশন চেক করার জন্য শুধু শুরুর সময় (startTime) ব্যবহার করুন
+                    bool isSelected = controller.selectedTime.value == startTime;
+
                     return GestureDetector(
-                      onTap: () => controller.selectTime(time),
+                      onTap: () => controller.selectTime(startTime),
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 5),
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
                           color: isSelected ? Colors.black : Colors.white,
-                          border: Border.all(color: Colors.grey),
+                          border: Border.all(color: isSelected ? Colors.black : Colors.grey),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          time,
+                          displayTime, // এখানে "9:00 AM - 10:00 AM" দেখাবে
                           style: TextStyle(
+                            fontWeight: FontWeight.w500,
                             color: isSelected ? Colors.white : Colors.black,
                           ),
                         ),

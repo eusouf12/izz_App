@@ -44,39 +44,12 @@ class UserAllSportsScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             /// Header + Filter
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomText(
-                  text: "ALL SPORTS",
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Get.bottomSheet(
-                      SportsFilterBottomSheet(),
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                    );
-                  },
-                  child: Row(
-                    children: [
-                      CustomImage(
-                        imageSrc: AppIcons.filterIcon,
-                        height: 20,
-                        width: 20,
-                      ),
-                      const SizedBox(width: 6),
-                      CustomText(
-                        text: "FILTERS",
-                        fontSize: 14,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            CustomText(
+              text: "ALL SPORTS",
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
             ),
+
 
             /// Sports Grid
             Expanded(

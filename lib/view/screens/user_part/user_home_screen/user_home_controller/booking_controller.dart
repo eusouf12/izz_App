@@ -86,17 +86,16 @@ class BookingController extends GetxController {
     // bookedCourts.addAll(['02', '04']);
   }
 
-  List<String> getAvailableSlots() {
+  List<Map<String, String>> getAvailableSlots() {
     if (detailsController.venueDetails.value == null) return [];
 
     String dayName = DateFormat('EEEE').format(selectedDate.value);
 
-    VenueAvailability availability = detailsController.venueDetails.value!.venueAvailabilities.firstWhere(
-          (element) => element.day.toLowerCase() == dayName.toLowerCase(),
+    VenueAvailability availability = detailsController.venueDetails.value!.venueAvailabilities.firstWhere((element) => element.day.toLowerCase() == dayName.toLowerCase(),
       orElse: () => VenueAvailability(day: dayName, scheduleSlots: []),
     );
 
-    return availability.scheduleSlots.map((slot) => slot.from).toList();
+    return availability.scheduleSlots.map((slot) => {"from":slot.from,"to": slot.to}).toList();
   }
 
   String _getEndTime(String startTime) {
@@ -108,8 +107,7 @@ class BookingController extends GetxController {
       orElse: () => VenueAvailability(day: dayName, scheduleSlots: []),
     );
 
-    var slot = availability.scheduleSlots.firstWhere(
-            (s) => s.from == startTime,
+    var slot = availability.scheduleSlots.firstWhere((s) => s.from == startTime,
         orElse: () => ScheduleSlot(from: "", to: "")
     );
 
@@ -181,10 +179,7 @@ class BookingController extends GetxController {
         "totalPrice": totalPrice.toInt()
       };
 
-      Response response = await ApiClient.postData(
-          ApiUrl.bookSlot(id: venueId),
-          jsonEncode(body)
-      );
+      Response response = await ApiClient.postData(ApiUrl.bookSlot(id: venueId), jsonEncode(body));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         showCustomSnackBar("Booking Successful!", isError: false);

@@ -136,6 +136,7 @@ class UserVenueDetailsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 16),
+                // venue availability
 
                 if (venue.venueAvailabilities.isNotEmpty)
                   ...venue.venueAvailabilities.map((availability) {
