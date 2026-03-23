@@ -17,6 +17,7 @@ import '../../../components/custom_text_field/custom_text_field.dart';
 class UserAllSportsScreen extends StatelessWidget {
   UserAllSportsScreen({super.key});
   final SportsTypeController sportsTypeController = Get.put(SportsTypeController());
+  final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +35,22 @@ class UserAllSportsScreen extends StatelessWidget {
 
             /// Search
             CustomTextField(
+              textEditingController: searchController,
               fillColor: AppColors.white,
               fieldBorderColor: AppColors.greyLight,
               prefixIcon: Icon(Icons.search, color: AppColors.greyLight),
               hintText: "Search",
               hintStyle: TextStyle(color: AppColors.greyLight),
+
+              onChanged: (value) {
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  if (searchController.text == value) {
+                    sportsTypeController.getAllSports(
+                      search: value,
+                    );
+                  }
+                });
+              },
             ),
 
             const SizedBox(height: 20),
@@ -54,55 +66,97 @@ class UserAllSportsScreen extends StatelessWidget {
             /// Sports Grid
             Expanded(
               child: Obx(() {
-                if (sportsTypeController.isLoading.value) {
+                if (sportsTypeController.isSportsLoading.value) {
                   return const Center(child: CustomLoader());
                 }
                 if (sportsTypeController.sportsList.isEmpty) {
                   return const Center(child: Text("No sports found (API returned empty list)", style: TextStyle(color: Colors.red)),);
                 }
 
-                return GridView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                  ),
-                  itemCount: sportsTypeController.sportsList.length,
-                  itemBuilder: (context, index) {
-                    final sport = sportsTypeController.sportsList[index];
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (scrollInfo) {
 
-                    return GestureDetector(
-                      onTap: () {
-                        Get.toNamed(AppRoutes.userSearchVenueScreen, arguments: sport.sportName,);
-                      },
-                      child: Stack(
-                        children: [
-                          CustomNetworkImage(
-                            imageUrl: sport.sportsImage?.isNotEmpty == true ? sport.sportsImage! : AppConstants.sports,
-                            height: 190.h,
-                            width: MediaQuery.sizeOf(context).width / 2.2,
-                            borderRadius: const BorderRadius.all(Radius.circular(13)),
-                          ),
-                          Positioned(
-                            bottom: 40,
-                            left: 10,
-                            child: CustomText(
-                              text: sport.sportName ?? "",
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.white,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
+                    if (!sportsTypeController.isSportsLoadMore.value &&
+                        scrollInfo.metrics.pixels ==
+                            scrollInfo.metrics.maxScrollExtent &&
+                        sportsTypeController.currentPage <
+                            sportsTypeController.totalPages) {
+
+                      sportsTypeController.getAllSports(
+                        loadMore: true,
+                        search: searchController.text,
+                      );
+                    }
+
+                    return true;
                   },
+
+                  child: GridView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+
+                    itemCount:
+                    sportsTypeController.sportsList.length + 1,
+
+                    itemBuilder: (context, index) {
+
+                      /// 🔥 LOAD MORE LOADER
+                      if (index ==
+                          sportsTypeController.sportsList.length) {
+                        return sportsTypeController.isSportsLoadMore.value
+                            ? const Center(child: CustomLoader())
+                            : const SizedBox();
+                      }
+
+                      final sport =
+                      sportsTypeController.sportsList[index];
+
+                      return GestureDetector(
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutes.userSearchVenueScreen,
+                            arguments: sport.sportName,
+                          );
+                        },
+
+                        child: Stack(
+                          children: [
+                            CustomNetworkImage(
+                              imageUrl: sport.sportsImage?.isNotEmpty == true
+                                  ? sport.sportsImage!
+                                  : AppConstants.sports,
+                              height: 190.h,
+                              width:
+                              MediaQuery.sizeOf(context).width / 2.2,
+                              borderRadius: const BorderRadius.all(
+                                  Radius.circular(13)),
+                            ),
+
+                            Positioned(
+                              bottom: 40,
+                              left: 10,
+                              child: CustomText(
+                                text: sport.sportName ?? "",
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.white,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 );
               }),
             ),
-
           ],
         ),
       ),

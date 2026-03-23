@@ -18,7 +18,14 @@ class ApiUrl {
   static const String changePassword = "/auth/change-password";
   static const String updateProfile = "/users/update";
   static const String vendorProfile = "/users/my-profile";
-  static const String getSportsTypes = "/sports-types";
+  static String getSportsTypes({required String page, String? search}) {
+    String url = "/sports-types?page=$page&limit=10";
+    if (search != null && search.isNotEmpty) {
+      url += "&sportName=$search";
+    }
+    return url;
+  }
+
   static String allSports({String? page, String? sportName}) {
     String url = "/venues/group-by-sports-type?page=$page&limit=10";
     if (sportName != null && sportName.isNotEmpty) {url += "&searchTerm=$sportName";}

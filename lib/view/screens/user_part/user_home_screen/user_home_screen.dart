@@ -85,7 +85,7 @@ class UserHomeScreen extends StatelessWidget {
 
                     final trendingList = displayList.take(3).toList();
 
-                    if (sportsController.isLoading.value) {
+                    if (sportsController.isSportsLoading.value) {
                       return SizedBox(height: 220.h, child: const Center(child: CustomLoader()));
                     }
                     if (trendingList.isEmpty) return const SizedBox.shrink();
