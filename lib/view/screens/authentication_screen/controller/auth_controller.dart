@@ -70,13 +70,7 @@ class AuthController extends GetxController {
         // Show success message
         showCustomSnackBar(jsonResponse['message']?.toString() ?? "Registration successful! Please verify your email.", isError: false);
         // Navigate to OTP screen
-        Get.toNamed(
-          AppRoutes.otpScreen,
-          arguments: SignUpAuthModel(
-            emailController.value.text,
-            AppStrings.signUp,
-          ),
-        );
+        Get.toNamed(AppRoutes.loginScreen,);
 
         // Clear signup data
         clearSignUpData();

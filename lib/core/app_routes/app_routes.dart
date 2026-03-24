@@ -19,13 +19,11 @@ import '../../view/screens/user_part/user_home_screen/user_venue_details_screen.
 import '../../view/screens/user_part/user_message_list_screen/view/user_message_list_screen.dart';
 import '../../view/screens/user_part/user_message_list_screen/view/chat_inbox_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_about_us_screen.dart';
-import '../../view/screens/user_part/user_profile_screen/user_account_settings.dart';
 import '../../view/screens/user_part/user_profile_screen/user_change_password_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_collect_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_edit_profile_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_help_support_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_how_it_work_screen.dart';
-import '../../view/screens/user_part/user_profile_screen/user_notification_setting_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_privacy_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_profile_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_terms_screen.dart';
@@ -63,8 +61,6 @@ class AppRoutes {
   static const String userProfileScreen = "/UserProfileScreen";
   static const String userMessageListScreen = "/UserMessageListScreen";
   static const String userEditProfileScreen = "/UserEditProfileScreen";
-  static const String userNotificationSettingScreen = "/UserNotificationSettingScreen";
-  static const String userAccountSettings = "/UserAccountSettings";
   static const String userChangePasswordScreen = "/UserChangePasswordScreen";
   static const String userTermsScreen = "/UserTermsScreen";
   static const String userPrivacyScreen = "/UserPrivacyScreen";
@@ -120,8 +116,6 @@ class AppRoutes {
     GetPage(name: userProfileScreen, page: () => UserProfileScreen()),
     GetPage(name: userMessageListScreen, page: () => UserMessageListScreen()),
     GetPage(name: userEditProfileScreen, page: () => UserEditProfileScreen()),
-    GetPage(name: userNotificationSettingScreen, page: () => UserNotificationSettingScreen()),
-    GetPage(name: userAccountSettings, page: () => UserAccountSettings()),
     GetPage(name: userChangePasswordScreen, page: () => UserChangePasswordScreen()),
     GetPage(name: userTermsScreen, page: () => UserTermsScreen()),
     GetPage(name: userPrivacyScreen, page: () => UserPrivacyScreen()),

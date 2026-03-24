@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../../core/app_routes/app_routes.dart';
 import '../../../../../helper/shared_prefe/shared_prefe.dart';
 import '../../../../../service/api_check.dart';
 import '../../../../../service/api_client.dart';
@@ -56,14 +57,9 @@ class VendorProfileController extends GetxController {
     }
   }
 
-  //==========================================
-  // Terms, Privacy, About Us (Existing Logic)
-  //==========================================
+  //==========================================// Terms, Privacy, About Us (Existing Logic)//==========================================
   final rxTermsStatus = Status.loading.obs;
-
-  void setTermsStatus(Status value) {
-    rxTermsStatus.value = value;
-  }
+  void setTermsStatus(Status value) {rxTermsStatus.value = value;}
 
   Rx<TermsResponseModel> termsResponse = TermsResponseModel(data: []).obs;
 
@@ -117,9 +113,7 @@ class VendorProfileController extends GetxController {
   }
 
   Rx<AboutAppResponseModel> aboutResponse = AboutAppResponseModel().obs;
-
   RxBool isLoadingAbout = false.obs;
-
   Future<void> getAboutUsData() async {
     isLoadingAbout.value = true;
 
@@ -138,9 +132,7 @@ class VendorProfileController extends GetxController {
     }
   }
 
-  //==========================================
-  // Change Password (UPDATED with JSON Encode)
-  //==========================================
+  //==========================================// Change Password (UPDATED with JSON Encode)//==========================================
   Future<void> changePassword() async {
     updatePasswordLoading.value = true;
 
@@ -289,6 +281,27 @@ class VendorProfileController extends GetxController {
       refresh();
       showCustomSnackBar("An error occurred. Please try again.", isError: true);
       debugPrint("Profile update error: $e");
+    }
+  }
+
+  //============ delete account ===============
+  Future<void> deleteAccount({required String userId}) async {
+    try {
+      final response = await ApiClient.deleteData(ApiUrl.deleteAccount(userId: userId));
+      final jsonResponse = response.body is String ? jsonDecode(response.body) : response.body;
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        showCustomSnackBar(jsonResponse["message"] ?? "Account deleted successfully!", isError: false,);
+        Get.offAllNamed(AppRoutes.loginScreen);
+
+      } else {
+        debugPrint("Failed to delete account");
+        showCustomSnackBar(jsonResponse["message"] ?? "Failed to delete account", isError: true,);
+      }
+
+    } catch (e) {
+      debugPrint("Error deleting account: $e");
+      showCustomSnackBar("Something went wrong!", isError: true,);
     }
   }
 

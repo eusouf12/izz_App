@@ -121,7 +121,7 @@ class _CustomShowDialogState extends State<CustomShowDialog> {
                   title: widget.rightTextButton ?? "No",
                   height: 45.h,
                   fillColor: AppColors.white,
-                  textColor: AppColors.primary,
+                  textColor: AppColors.red,
                   isBorder: true,
                   borderWidth: 1,
                 )

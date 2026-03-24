@@ -10,6 +10,7 @@ import 'package:izz_atlas_app/view/components/custom_netwrok_image/custom_networ
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_profile_screen/widgets/custom_profile_card.dart';
 
+import '../../../../helper/shared_prefe/shared_prefe.dart';
 import '../../../../utils/app_colors/app_colors.dart';
 import 'controller/user_gamification_profile_controller.dart';
 import '../../../components/custom_logout_popup/custom_logout_popup.dart';
@@ -119,9 +120,6 @@ class UserProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
-
-
               const SizedBox(height: 20),
               Obx(() {
                 final gData = gamificationController.gamificationModel.value?.data;
@@ -172,6 +170,7 @@ class UserProfileScreen extends StatelessWidget {
                 );
               }),
               SizedBox(height: 20),
+              //Chats
               CustomProfileCard(
                 nameTitle: "Chats",
                 onTap: () {
@@ -184,32 +183,69 @@ class UserProfileScreen extends StatelessWidget {
                   Get.toNamed(AppRoutes.userEditProfileScreen);
                 },
               ),
+              //Change Password
               CustomProfileCard(
                 nameTitle: "Change Password",
                 onTap: () {
                   Get.toNamed(AppRoutes.userChangePasswordScreen);
                 },
               ),
+              //Terms
               CustomProfileCard(
                 nameTitle: "Terms & Conditions",
                 onTap: () {
                   Get.toNamed(AppRoutes.userTermsScreen);
                 },
               ),
+              //Privacy
               CustomProfileCard(
                 nameTitle: "Privacy Policy",
                 onTap: () {
                 Get.toNamed(AppRoutes.userPrivacyScreen);
               },
               ),
+              //About
               CustomProfileCard(
                 nameTitle: "About Us",
                 onTap: () {
                 Get.toNamed(AppRoutes.userAboutUsScreen);
               },
               ),
+              //delete account
+              CustomProfileCard(
+                  nameTitle: "Delete Account",
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (ctx) =>
+                          AlertDialog(
+                            backgroundColor: AppColors.white,
+                            insetPadding: EdgeInsets.all(8),
+                            contentPadding: EdgeInsets.all(8),
+                            content: SizedBox(
+                              width: MediaQuery.sizeOf(context).width,
+                              child: CustomShowDialog(
+                                textColor: AppColors.black,
+                                title: "Delete Your Account",
+                                discription: "Are You Sure Delete Your Account",
+                                showColumnButton: true,
+                                showCloseButton: true,
+                                rightOnTap: () {
+                                  Get.back();
+                                },
+                                leftOnTap: () async {
+                                  vendorProfileController.deleteAccount(userId:  vendorProfileController.userProfileModel.value.id);
 
-
+                                 // Get.offAllNamed(AppRoutes.loginScreen);
+                                },
+                              ),
+                            ),
+                          ),
+                    );
+                  }
+              ),
+              //logout
               GestureDetector(
                 onTap: () {
                   showDialog(

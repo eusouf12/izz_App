@@ -92,30 +92,30 @@ class OtpScreen extends StatelessWidget {
 
                           SizedBox(height: 10.h),
 
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomText(
-                                text: "Didn't receive the code? ",
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black12,
-                                bottom: 10.h,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  // Call resend API if implemented
-                                },
-                                child: CustomText(
-                                  text: " Resend",
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.blue,
-                                  bottom: 10.h,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     CustomText(
+                          //       text: "Didn't receive the code? ",
+                          //       fontSize: 16,
+                          //       fontWeight: FontWeight.w400,
+                          //       color: Colors.black12,
+                          //       bottom: 10.h,
+                          //     ),
+                          //     GestureDetector(
+                          //       onTap: () {
+                          //         // Call resend API if implemented
+                          //       },
+                          //       child: CustomText(
+                          //         text: " Resend",
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //         color: Colors.blue,
+                          //         bottom: 10.h,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           GestureDetector(
                             onTap: (){
                               Get.offAllNamed(AppRoutes.loginScreen);
