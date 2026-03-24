@@ -76,16 +76,10 @@ class UserAllSportsScreen extends StatelessWidget {
                 return NotificationListener<ScrollNotification>(
                   onNotification: (scrollInfo) {
 
-                    if (!sportsTypeController.isSportsLoadMore.value &&
-                        scrollInfo.metrics.pixels ==
-                            scrollInfo.metrics.maxScrollExtent &&
-                        sportsTypeController.currentPage <
-                            sportsTypeController.totalPages) {
+                    if (!sportsTypeController.isSportsLoadMore.value && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+                        sportsTypeController.currentPage < sportsTypeController.totalPages) {
 
-                      sportsTypeController.getAllSports(
-                        loadMore: true,
-                        search: searchController.text,
-                      );
+                      sportsTypeController.getAllSports(loadMore: true, search: searchController.text,);
                     }
 
                     return true;
@@ -102,17 +96,11 @@ class UserAllSportsScreen extends StatelessWidget {
                       mainAxisSpacing: 10,
                     ),
 
-                    itemCount:
-                    sportsTypeController.sportsList.length + 1,
+                    itemCount: sportsTypeController.sportsList.length + 1,
 
                     itemBuilder: (context, index) {
-
-                      /// 🔥 LOAD MORE LOADER
-                      if (index ==
-                          sportsTypeController.sportsList.length) {
-                        return sportsTypeController.isSportsLoadMore.value
-                            ? const Center(child: CustomLoader())
-                            : const SizedBox();
+                      if (index == sportsTypeController.sportsList.length) {
+                        return sportsTypeController.isSportsLoadMore.value ? const Center(child: CustomLoader()) : const SizedBox();
                       }
 
                       final sport =

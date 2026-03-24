@@ -131,7 +131,7 @@ class UserAllSportsController extends GetxController{
       else {
         isSportsLoading.value = true;
         sportsCurrentPage = 1;
-        sportsVenueGroups.clear();
+        allSportsVenueFilter.clear();
       }
 
       final url = ApiUrl.allSports(
@@ -182,62 +182,5 @@ class UserAllSportsController extends GetxController{
       isSportsLoadMore.value = false;
     }
   }
-
-
-  // /// Filtered venue list
-  // var filteredSportsVenueGroups = <SportsVenueGroup>[].obs;
-  //
-  // /// Loading states
-  // var isFilteringLoading = false.obs;
-  // var isFilteringLoadMore = false.obs;
-  //
-  // /// Pagination
-  // int filterCurrentPage = 1;
-  // int filterTotalPage = 1;
-  //
-  // /// Filtering all sports venues
-  // Future<void> filterSports({bool loadMore = false,}) async {
-  //   if (isFilteringLoading.value || isFilteringLoadMore.value) return;
-  //
-  //   try {
-  //     if (loadMore) {
-  //       if (filterCurrentPage >= filterTotalPage) return;
-  //       isFilteringLoadMore.value = true;
-  //       filterCurrentPage++;
-  //     } else {
-  //       isFilteringLoading.value = true;
-  //       filterCurrentPage = 1;
-  //       filteredSportsVenueGroups.clear();
-  //     }
-  //
-  //     final response = await ApiClient.getData(ApiUrl.filterSports(page: filterCurrentPage.toString(), filter: selectedSport.value,),);
-  //
-  //     final Map<String, dynamic> jsonResponse = response.body is String ? jsonDecode(response.body) : response.body;
-  //
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       final venueResponse = VenueResponse.fromJson(jsonResponse);
-  //
-  //       final meta = venueResponse.data.meta;
-  //       filterTotalPage = (meta.total / meta.limit).ceil();
-  //
-  //       filteredSportsVenueGroups.addAll(
-  //         venueResponse.data.data,
-  //       );
-  //     } else {
-  //       showCustomSnackBar(
-  //         jsonResponse['message']?.toString() ?? "Filtering failed",
-  //         isError: true,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     showCustomSnackBar(e.toString(), isError: true);
-  //   } finally {
-  //     isFilteringLoading.value = false;
-  //     isFilteringLoadMore.value = false;
-  //     update();
-  //   }
-  // }
-
-
 
 }

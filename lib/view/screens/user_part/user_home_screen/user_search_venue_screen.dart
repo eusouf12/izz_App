@@ -18,6 +18,7 @@ class UserSearchVenueScreen extends StatelessWidget {
   UserSearchVenueScreen({super.key});
   final UserAllSportsController userAllSportsController = Get.put(UserAllSportsController());
   final  selectedSportsType = Get.arguments;
+  final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +42,14 @@ class UserSearchVenueScreen extends StatelessWidget {
               prefixIcon: Icon(Icons.search, color: AppColors.greyLight),
               hintText: "Search",
               hintStyle: TextStyle(color: AppColors.greyLight),
+              textEditingController: searchController,
               onChanged: (value) {
-                userAllSportsController.allSports(filter: value);
+                userAllSportsController.selectedVenue.value = value;
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  if (searchController.text == value) {
+                    userAllSportsController.allSports(filter: selectedSportsType);
+                  }
+                });
               },
             ),
 
@@ -91,32 +98,17 @@ class UserSearchVenueScreen extends StatelessWidget {
             /// VENUE LIST
             Expanded(
               child: Obx(() {
-                // ১. প্রথমবার ডাটা লোড হওয়ার সময় মেইন লোডার
                 if (userAllSportsController.isSportsLoading.value && userAllSportsController.allSportsVenueFilter.isEmpty) {
                   return const Center(child: CustomLoader());
                 }
-
-                // ২. যদি কোনো ডাটা না পাওয়া যায়
                 if (userAllSportsController.allSportsVenueFilter.isEmpty) {
-                  return Center(
-                    child: CustomText(
-                      text: "No venues found",
-                      color: AppColors.grey,
-                      fontSize: 16,
-                    ),
-                  );
+                  return const Center(child: Text("No venues found"));
                 }
-
-                // আপনার মডেল অনুযায়ী groups থেকে venues গুলো বের করে আনা
-                final venuesList = userAllSportsController.allSportsVenueFilter
-                    .expand((group) => group.venues)
-                    .toList();
+                final venuesList = userAllSportsController.allSportsVenueFilter.expand((group) => group.venues).toList();
 
                 return NotificationListener<ScrollNotification>(
                   onNotification: (ScrollNotification scrollInfo) {
-                    // ৩. স্ক্রল করে একদম নিচে পৌঁছালে এবং আরও ডাটা থাকলে Load More কল হবে
-                    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
-                        !userAllSportsController.isSportsLoadMore.value) {
+                    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && !userAllSportsController.isSportsLoadMore.value) {
                       userAllSportsController.allSports(isLoadMoreRequest: true);
                     }
                     return false;
@@ -125,12 +117,10 @@ class UserSearchVenueScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 20),
                     itemCount: venuesList.length + (userAllSportsController.isSportsLoadMore.value ? 1 : 0),
                     itemBuilder: (context, index) {
-
-                      // ৪. লিস্টের শেষে ছোট লোডার দেখানো (Load More এর জন্য)
                       if (index == venuesList.length) {
                         return const Padding(
                           padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Center(child: CircularProgressIndicator()), // বা আপনার CustomLoader
+                          child: Center(child: CustomLoader()),
                         );
                       }
 
