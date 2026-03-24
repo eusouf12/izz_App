@@ -137,7 +137,7 @@ class UserSearchVenueScreen extends StatelessWidget {
                         onTap: () {
                           Get.toNamed(
                             AppRoutes.userVenueDetailsScreen,
-                            arguments: venue.id,
+                            arguments: {"venueId":venue.id , "page": "booking"},
                           );
                         },
                       );

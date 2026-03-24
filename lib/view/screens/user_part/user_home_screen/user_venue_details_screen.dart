@@ -22,12 +22,16 @@ class UserVenueDetailsScreen extends StatelessWidget {
 
   final UserVenueDetailsController controller = Get.put(UserVenueDetailsController());
   final MessageController messageController = Get.put(MessageController());
+  final  arg = Get.arguments;
+  late final String? pageName;
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final dynamic argument = Get.arguments;
-      if (argument != null && argument is String && argument.isNotEmpty) {
-        controller.getVenueDetails(argument);
+    //  final dynamic argument = Get.arguments;
+      final venuId = arg['venueId'];
+       pageName = arg['page'];
+      if (venuId != null && venuId is String && venuId.isNotEmpty) {
+        controller.getVenueDetails(venuId);
       } else {
         debugPrint("Error: Venue ID not found or invalid format in arguments");
       }
@@ -203,11 +207,12 @@ class UserVenueDetailsScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
                 //======================== Book BUTTON  ========================
+                pageName == "booking"?
                 CustomButton(
                   onTap: () => Get.toNamed(AppRoutes.bookYourSlotScreen, arguments: venue.id),
                   title: "BOOK NOW",
                   textColor: AppColors.white,
-                ),
+                ): SizedBox.shrink(),
                 const SizedBox(height: 16),
                 //======================== CHAT BUTTON  ========================
                 CustomButtonTwo(

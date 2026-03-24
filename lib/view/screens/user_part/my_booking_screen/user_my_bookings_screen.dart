@@ -100,7 +100,9 @@ class UserMyBookingsScreen extends StatelessWidget {
                             isPending:true,
                             isChatOption: false,
                             onViewDetailsTap: () {
-                                Get.toNamed(AppRoutes.userVenueDetailsScreen, arguments: booking.venue?.id);
+                                Get.toNamed(AppRoutes.userVenueDetailsScreen,
+                                    arguments: {"venueId":booking.venue?.id , "page": "myBook"}
+                                );
                               },
 
                           ),
