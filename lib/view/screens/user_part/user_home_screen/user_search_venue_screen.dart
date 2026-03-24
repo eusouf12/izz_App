@@ -16,12 +16,12 @@ import 'model/all_sports_model.dart';
 
 class UserSearchVenueScreen extends StatelessWidget {
   UserSearchVenueScreen({super.key});
-
   final UserAllSportsController userAllSportsController = Get.put(UserAllSportsController());
+  final  selectedSportsType = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
-    final  selectedSportsType = Get.arguments;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userAllSportsController.allSports(filter: selectedSportsType);
     });
@@ -61,7 +61,9 @@ class UserSearchVenueScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     Get.bottomSheet(
-                      SportsFilterBottomSheet(),
+                      UserFilterScreen(
+                        sportType: selectedSportsType,
+                      ),
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
                     );
@@ -89,46 +91,68 @@ class UserSearchVenueScreen extends StatelessWidget {
             /// VENUE LIST
             Expanded(
               child: Obx(() {
-
-                if (userAllSportsController.isLoading.value) {
+                // ১. প্রথমবার ডাটা লোড হওয়ার সময় মেইন লোডার
+                if (userAllSportsController.isSportsLoading.value && userAllSportsController.allSportsVenueFilter.isEmpty) {
                   return const Center(child: CustomLoader());
                 }
 
-                if (userAllSportsController.sportsVenueGroups.isEmpty) {
+                // ২. যদি কোনো ডাটা না পাওয়া যায়
+                if (userAllSportsController.allSportsVenueFilter.isEmpty) {
                   return Center(
                     child: CustomText(
                       text: "No venues found",
-                      color: AppColors.grey,fontSize: 16,
+                      color: AppColors.grey,
+                      fontSize: 16,
                     ),
                   );
                 }
 
-                /// flatten all venues from groups
-                final venuesList = userAllSportsController.sportsVenueGroups.expand((group) => group.venues).toList();
+                // আপনার মডেল অনুযায়ী groups থেকে venues গুলো বের করে আনা
+                final venuesList = userAllSportsController.allSportsVenueFilter
+                    .expand((group) => group.venues)
+                    .toList();
 
-                return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  itemCount: venuesList.length,
-                  itemBuilder: (context, index) {
-
-                    final venue = venuesList[index];
-
-                    return CustomResultsVenueContainer(
-                      venueName: venue.venueName,
-                      sportName: venue.sportsType,
-                      location: venue.location,
-                      price: "RM ${venue.pricePerHour}/hr",
-                      status: venue.venueStatus ? "Active" : "Booked",
-                      rating: venue.venueRating.toString(),
-                      imageUrl: venue.venueImage,
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutes.userVenueDetailsScreen,
-                          arguments: venue.id,
-                        );
-                      },
-                    );
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    // ৩. স্ক্রল করে একদম নিচে পৌঁছালে এবং আরও ডাটা থাকলে Load More কল হবে
+                    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+                        !userAllSportsController.isSportsLoadMore.value) {
+                      userAllSportsController.allSports(isLoadMoreRequest: true);
+                    }
+                    return false;
                   },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    itemCount: venuesList.length + (userAllSportsController.isSportsLoadMore.value ? 1 : 0),
+                    itemBuilder: (context, index) {
+
+                      // ৪. লিস্টের শেষে ছোট লোডার দেখানো (Load More এর জন্য)
+                      if (index == venuesList.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(child: CircularProgressIndicator()), // বা আপনার CustomLoader
+                        );
+                      }
+
+                      final venue = venuesList[index];
+
+                      return CustomResultsVenueContainer(
+                        venueName: venue.venueName,
+                        sportName: venue.sportsType,
+                        location: venue.location,
+                        price: "RM ${venue.pricePerHour}/hr",
+                        status: venue.venueStatus ? "Active" : "Booked",
+                        rating: venue.venueRating.toString(),
+                        imageUrl: venue.venueImage,
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutes.userVenueDetailsScreen,
+                            arguments: venue.id,
+                          );
+                        },
+                      );
+                    },
+                  ),
                 );
               }),
             ),

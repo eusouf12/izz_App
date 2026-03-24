@@ -23,6 +23,7 @@ class UserHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       vendorProfileController.getUserProfile();
+      sportsController.getAllSports();
     });
     return Scaffold(
       backgroundColor: AppColors.white,

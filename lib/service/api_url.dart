@@ -25,13 +25,43 @@ class ApiUrl {
     }
     return url;
   }
-
-  static String allSports({String? page, String? sportName}) {
+  // venue type under sports
+  static String allSports({required String page, String? sportsType, String? minPrice, String? maxPrice, String? location,String?searchTerm}) {
     String url = "/venues/group-by-sports-type?page=$page&limit=10";
-    if (sportName != null && sportName.isNotEmpty) {url += "&searchTerm=$sportName";}
+
+    if (sportsType != null && sportsType.isNotEmpty) {
+      url += "&sportsType=$sportsType";
+    }
+
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      url += "&searchTerm=$searchTerm";
+    }
+
+    if (minPrice != null && minPrice.isNotEmpty) {
+      url += "&minPrice=$minPrice";
+    }
+
+    if (maxPrice != null && maxPrice.isNotEmpty) {
+      url += "&maxPrice=$maxPrice";
+    }
+
+    if (location != null && location.isNotEmpty) {
+      url += "&location=$location";
+    }
+
     return url;
   }
-  static String filterSports({required String page, required String filter}) => "/venues?page=$page&limit=3&sportsType=$filter";
+  // get venue name and location
+  static String getFilterLocVenueName({required String page, String? sportsType}) {
+    String url = "/venues/group-by-sports-type?page=$page&limit=10";
+
+    if (sportsType != null && sportsType.isNotEmpty) {
+      url += "&sportsType=$sportsType";
+    }
+    return url;
+  }
+
+ // static String filterSports({required String page, required String filter}) => "/venues?page=$page&limit=3&sportsType=$filter";
   static String bookingsByStatus({required String status}) => "/venue-bookings/specific-user-bookings?filter=${status.toLowerCase()}";
   static String vendorBookingsByStatus({required String status}) => "/venue-bookings/specific-vendor-bookings?filter=${status.toLowerCase()}";
 
