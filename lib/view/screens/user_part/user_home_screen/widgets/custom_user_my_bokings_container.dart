@@ -11,6 +11,7 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
   final String? title;
   final String? img;
   final String? address;
+  final String? status;
   final String? complexName;
   final String? facilityName;
   final String? dateTime;
@@ -20,16 +21,19 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
   final VoidCallback? onUserChatTap;
   final VoidCallback? onViewDetailsTap;
   final VoidCallback? onReviewTap;
+  final VoidCallback? onPaymentTap;
 
   final bool isChatOption;
   final bool isUserChatTap;
   final bool isPending;
   final bool isCompleted;
+  final bool isPayment;
 
   const CustomUserMyBokingsContainer({
     super.key,
     this.title,
     this.img,
+    this.status,
     this.address,
     this.complexName,
     this.facilityName,
@@ -43,7 +47,7 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
     this.isPending = false,
     this.isCompleted = false,
     this.onReviewTap,
-    this.onUserChatTap,
+    this.onUserChatTap, this.onPaymentTap, required this.isPayment,
   });
 
   @override
@@ -84,7 +88,7 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
                       children: [
                         Expanded(
                           child: CustomText(
-                            text: title ?? "Westfield Sports Lab",
+                            text: title ?? "",
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: AppColors.white,
@@ -96,32 +100,57 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
                         Row(
                           children: [
                             Row(
-                              children: List.generate(5, (value) {
-                                return const Icon(Icons.star, color: Colors.amberAccent, size: 16);
+                              children: List.generate(5, (index) {
+                                double ratingValue = double.tryParse(rating.toString()) ?? 0.0;
+                                return Icon(index < ratingValue.floor() ? Icons.star : (index < ratingValue ? Icons.star_half : Icons.star_border), color: Colors.amberAccent, size: 16,);
                               }),
                             ),
                             CustomText(
                               left: 4,
-                              text: rating ?? "4.2",
+                              text:  "($rating)",
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                               color: AppColors.white,
                               textAlign: TextAlign.start,
                             ),
                           ],
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    // --- status ---
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child:  CustomText(
+                            text: complexName ?? "",
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.textClr,
+                            bottom: 8,
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: (status == "PENDING") ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: (status == "PENDING") ? Colors.green : Colors.red, width: 1,),
+                          ),
+                          child:  CustomText(
+                            text: status ?? "PENDING",
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: (status == "PENDING") ? Colors.green : Colors.red,
+                            textAlign: TextAlign.start,
+                          ),
+
                         ),
                       ],
                     ),
 
-                    // --- Address ---
-                    CustomText(
-                      text: address ?? "124 Lorem Ave, Dhaka",
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.textClr,
-                      bottom: 8,
-                      textAlign: TextAlign.start,
-                    ),
                     const SizedBox(height: 5),
 
                     // --- Complex Name ---
@@ -136,7 +165,7 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
                         Expanded(
                           child: CustomText(
                             left: 8,
-                            text: complexName ?? "Westfield Sports Complex",
+                            text: address ?? "",
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: AppColors.textClr,
@@ -212,6 +241,17 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
                     const SizedBox(height: 10),
 
                     // --- Buttons Logic ---
+                    isPayment== true ?
+                    CustomButtonTwo(
+                      onTap: onChatTap ?? () {},
+                      title: "PROCEED TO PAYMENT",
+                      textColor: AppColors.blue,
+                      fillColor: Colors.transparent,
+                      borderColor: AppColors.blue,
+                      borderWidth: 1,
+                      isBorder: true,
+                    )
+                    : SizedBox.shrink(),
                     if (isUserChatTap)
                       CustomButtonTwo(
                         onTap: onChatTap ?? () {},

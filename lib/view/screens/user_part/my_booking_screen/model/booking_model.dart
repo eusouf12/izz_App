@@ -180,9 +180,7 @@ class TimeSlot {
   }
 }
 
-// =======================
-// Venue Model
-// =======================
+// ======================= Venue Model =======================
 class Venue {
   String? id;
   String? venueName;
@@ -190,6 +188,8 @@ class Venue {
   String? location;
   String? venueImage;
   int? pricePerHour;
+  String? venueRating;
+  int? venueReviewCount;
 
   Venue({
     this.id,
@@ -198,6 +198,8 @@ class Venue {
     this.location,
     this.venueImage,
     this.pricePerHour,
+    this.venueRating,
+    this.venueReviewCount,
   });
 
   factory Venue.fromJson(Map<String, dynamic> json) {
@@ -208,6 +210,8 @@ class Venue {
       location: json['location'],
       venueImage: json['venueImage'],
       pricePerHour: json['pricePerHour'],
+      venueRating: json['venueRating']?.toString() ?? "0",
+      venueReviewCount: json['venueReviewCount'] != null ? (json['venueReviewCount'] as num).toInt() : 0,
     );
   }
 
@@ -223,9 +227,7 @@ class Venue {
   }
 }
 
-// =======================
-// User Model
-// =======================
+// ======================= User Model =======================
 class User {
   String? id;
   String? fullName;

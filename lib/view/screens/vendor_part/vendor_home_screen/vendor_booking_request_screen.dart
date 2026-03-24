@@ -106,6 +106,7 @@ class VendorBookingRequestScreen extends StatelessWidget {
                             complexName: booking.sportsType ?? "",
                             facilityName: "Court ${booking.courtNumber ?? ""}",
                             dateTime: dateTime,
+                            isPayment: false,
                             onViewDetailsTap: (){
                               Get.toNamed(AppRoutes.venueDetailsScreen, arguments: booking.venue?.id);
                             },
@@ -124,6 +125,7 @@ class VendorBookingRequestScreen extends StatelessWidget {
                             facilityName: "Court ${booking.courtNumber ?? ""}",
                             dateTime: dateTime,
                             isPending: true,
+                            isPayment: false,
                             onViewDetailsTap: (){
                                Get.toNamed(AppRoutes.venueDetailsScreen, arguments: booking.venue?.id);
                             },
@@ -141,6 +143,7 @@ class VendorBookingRequestScreen extends StatelessWidget {
                             facilityName: "Court ${booking.courtNumber ?? ""}",
                             dateTime: dateTime,
                             isChatOption: false,
+                            isPayment: false,
                           ),
                         );
                       }

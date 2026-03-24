@@ -68,7 +68,7 @@ class CustomButtonTwo extends StatelessWidget {
             CustomImage(imageSrc: imageSrc ?? ""),
             CustomText(
               left: 8,
-              fontSize: fontSize ?? 16.sp,
+              fontSize: fontSize ?? 12.sp,
               fontWeight: fontWeight ?? FontWeight.w700,
               color: textColor,
               textAlign: TextAlign.center,
@@ -77,7 +77,7 @@ class CustomButtonTwo extends StatelessWidget {
             ),
           ],
         ) : CustomText(
-          fontSize: fontSize ?? 18.sp,
+          fontSize: fontSize ?? 16.sp,
           fontWeight: FontWeight.w700,
           color: textColor,
           textAlign: TextAlign.center,

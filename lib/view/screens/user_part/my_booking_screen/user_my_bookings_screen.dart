@@ -96,14 +96,21 @@ class UserMyBookingsScreen extends StatelessWidget {
                             address: booking.venue?.location ?? "",
                             complexName: booking.sportsType ?? "",
                             facilityName: "Court ${booking.courtNumber ?? ""}",
+                            status: booking.bookingStatus,
+                            rating: booking.venue?.venueRating ?? "",
                             dateTime: dateTime,
                             isPending:true,
                             isChatOption: false,
+                            isPayment: booking.bookingStatus == "CONFIRMED" ? true : false,
                             onViewDetailsTap: () {
                                 Get.toNamed(AppRoutes.userVenueDetailsScreen,
                                     arguments: {"venueId":booking.venue?.id , "page": "myBook"}
                                 );
                               },
+                            onPaymentTap: () {
+                              // Get.toNamed(AppRoutes.userBookingDetailsScreen,
+                              //     arguments: {"bookingId": booking.id});
+                            },
 
                           ),
                         );
@@ -119,6 +126,7 @@ class UserMyBookingsScreen extends StatelessWidget {
                             complexName: booking.sportsType ?? "",
                             facilityName: "Court ${booking.courtNumber ?? ""}",
                             dateTime: dateTime,
+                            isPayment: false,
                             isChatOption: false,
                           ),
                         );
@@ -142,6 +150,7 @@ class UserMyBookingsScreen extends StatelessWidget {
                               facilityName: "Court ${booking.courtNumber ?? ""}",
                               dateTime: dateTime,
                               isChatOption: false,
+                              isPayment: false,
                             ),
                           ),
                         );
