@@ -17,11 +17,9 @@ import 'controller/user_gamification_profile_controller.dart';
 class UserCollectScreen extends StatelessWidget {
   UserCollectScreen({super.key});
 
-  final VendorProfileController vendorProfileController =
-  Get.put(VendorProfileController());
+  final VendorProfileController vendorProfileController = Get.put(VendorProfileController());
 
-  final UserGamificationController gamificationController =
-  Get.put(UserGamificationController());
+  final UserGamificationController gamificationController = Get.put(UserGamificationController());
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +34,14 @@ class UserCollectScreen extends StatelessWidget {
           return const Center(child: CustomLoader());
         }
 
-        final data =
-            gamificationController.gamificationModel.value?.data;
+        final data = gamificationController.gamificationModel.value?.data;
 
         if (data == null) {
           return const Center(child: Text("No Data Found"));
         }
 
-        /// ✅ Safe progress calculation (backend driven)
-        final double progress = data.nextLevelXP == 0
-            ? 0
-            : (data.currentXP / data.nextLevelXP).clamp(0.0, 1.0);
+        // Safe progress calculation (backend driven)
+        final double progress = data.nextLevelXP == 0 ? 0 : (data.currentXP / data.nextLevelXP).clamp(0.0, 1.0);
 
         return Padding(
           padding: const EdgeInsets.only(left: 16, right: 16, bottom: 40),
@@ -61,8 +56,7 @@ class UserCollectScreen extends StatelessWidget {
                     Row(
                       children: [
                         Obx(() {
-                          final user =
-                              vendorProfileController.userProfileModel.value;
+                          final user = vendorProfileController.userProfileModel.value;
                           return Stack(
                             clipBehavior: Clip.none,
                             children: [
@@ -90,12 +84,8 @@ class UserCollectScreen extends StatelessWidget {
                         }),
                         const SizedBox(width: 16),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xff1F2937), Color(0xff4B5563)],
-                            ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xff1F2937), Color(0xff4B5563)],),
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: CustomText(

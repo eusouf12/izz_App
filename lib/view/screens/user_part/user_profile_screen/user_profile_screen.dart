@@ -35,6 +35,7 @@ class UserProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60.0),
           child: Column(
             children: [
+              //header
               Row(
                 children: [
                   Obx(() {
@@ -43,9 +44,7 @@ class UserProfileScreen extends StatelessWidget {
                       clipBehavior: Clip.none,
                       children: [
                         CustomNetworkImage(
-                          imageUrl: (userModel.photo.isNotEmpty)
-                              ? userModel.photo
-                              : AppConstants.profileImage,
+                          imageUrl: (userModel.photo.isNotEmpty) ? userModel.photo : AppConstants.profileImage,
                           height: 80,
                           width: 80,
                           boxShape: BoxShape.circle,
@@ -70,18 +69,9 @@ class UserProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Obx(() {
-                  final userModel = vendorProfileController.userProfileModel.value;
-                  return  CustomText(
-                        left: 8,
-                        text: userModel.fullName.isNotEmpty
-                            ? userModel.fullName
-                            : "Vendor Name",
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      );
-                  }),
+                        final userModel = vendorProfileController.userProfileModel.value;
+                        return  CustomText(left: 8, text: userModel.fullName.isNotEmpty ? userModel.fullName : "", fontWeight: FontWeight.w600, fontSize: 20, maxLines: 1, overflow: TextOverflow.ellipsis,);
+                      }),
                       Obx(() {
                         final gData = gamificationController.gamificationModel.value?.data;
                         return Row(
@@ -98,9 +88,7 @@ class UserProfileScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: CustomText(
-                                text: gData != null
-                                    ? "Level ${gData.currentLevel}"
-                                    : "Level -",
+                                text: gData != null ? "Level ${gData.currentLevel}" : "Level -",
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.amberAccent,
@@ -121,11 +109,10 @@ class UserProfileScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              //progressbar
               Obx(() {
                 final gData = gamificationController.gamificationModel.value?.data;
-                final double progress = (gData == null || gData.nextLevelXP == 0)
-                    ? 0
-                    : (gData.currentXP / gData.nextLevelXP).clamp(0.0, 1.0);
+                final double progress = (gData == null || gData.nextLevelXP == 0) ? 0 : (gData.currentXP / gData.nextLevelXP).clamp(0.0, 1.0);
                 return Column(
                   children: [
                     LinearProgressIndicator(
@@ -236,7 +223,6 @@ class UserProfileScreen extends StatelessWidget {
                                 },
                                 leftOnTap: () async {
                                   vendorProfileController.deleteAccount(userId:  vendorProfileController.userProfileModel.value.id);
-
                                  // Get.offAllNamed(AppRoutes.loginScreen);
                                 },
                               ),

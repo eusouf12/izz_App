@@ -114,6 +114,40 @@ class VendorProfileScreen extends StatelessWidget {
                   Get.toNamed(AppRoutes.vendorHelpSupportScreen);
                 },
               ),*/
+              //delete
+              CustomProfileCard(
+                  nameTitle: "Delete Account",
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (ctx) =>
+                          AlertDialog(
+                            backgroundColor: AppColors.white,
+                            insetPadding: EdgeInsets.all(8),
+                            contentPadding: EdgeInsets.all(8),
+                            content: SizedBox(
+                              width: MediaQuery.sizeOf(context).width,
+                              child: CustomShowDialog(
+                                textColor: AppColors.black,
+                                title: "Delete Your Account",
+                                discription: "Are You Sure Delete Your Account",
+                                showColumnButton: true,
+                                showCloseButton: true,
+                                rightOnTap: () {
+                                  Get.back();
+                                },
+                                leftOnTap: () async {
+                                  vendorProfileController.deleteAccount(userId:  vendorProfileController.userProfileModel.value.id);
+                                  // Get.offAllNamed(AppRoutes.loginScreen);
+                                },
+                              ),
+                            ),
+                          ),
+                    );
+                  }
+              ),
+              //logout
               GestureDetector(
                 onTap: () {
                   showDialog(
