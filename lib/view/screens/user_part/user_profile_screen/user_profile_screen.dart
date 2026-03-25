@@ -5,6 +5,7 @@ import 'package:izz_atlas_app/core/app_routes/app_routes.dart';
 import 'package:izz_atlas_app/utils/app_const/app_const.dart';
 import 'package:izz_atlas_app/utils/app_icons/app_icons.dart';
 import 'package:izz_atlas_app/view/components/custom_image/custom_image.dart';
+import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/components/custom_nav_bar/navbar.dart';
 import 'package:izz_atlas_app/view/components/custom_netwrok_image/custom_network_image.dart';
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
@@ -26,20 +27,36 @@ class UserProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       vendorProfileController.getUserProfile();
+      gamificationController.fetchGamificationProfile();
     });
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
+      body:Obx(() {
+        if (gamificationController.isLoading.value && gamificationController.gamificationModel.value == null) {
+          return const Center(child:CustomLoader());
+        }
+
+        return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 60.0),
           child: Column(
             children: [
               //header
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  /// ================= PROFILE IMAGE & BADGES =================
                   Obx(() {
                     final userModel = vendorProfileController.userProfileModel.value;
+                    final userGamification = gamificationController.gamificationModel.value?.data;
+                    final badges = userGamification?.badges ?? [];
+
+                    int displayLimit = 3;
+                    int totalBadges = badges.length;
+                    int displayCount = totalBadges > displayLimit ? displayLimit : totalBadges;
+                    int extraCount = totalBadges > displayLimit ? totalBadges - displayLimit : 0;
+
                     return Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -48,63 +65,109 @@ class UserProfileScreen extends StatelessWidget {
                           height: 80,
                           width: 80,
                           boxShape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.amberAccent,
-                            width: 2,
-                          ),
+                          border: Border.all(color: Colors.amberAccent, width: 2),
                         ),
                         Positioned(
-                          bottom: -10,
-                          right: -16,
-                          child: CustomImage(
-                            imageSrc: AppIcons.powerIcon,
+                          bottom: -12,
+                          right: -8,
+                          child: SizedBox(
+                            height: 30,
+                            width: 70,
+                            child: Stack(
+                              children: [
+                                ...List.generate(displayCount, (index) {
+                                  return Positioned(
+                                    left: index * 15.0,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.white, width: 1.5),
+                                      ),
+                                      child: CustomNetworkImage(
+                                        imageUrl: badges[index].iconUrl,
+                                        height: 25,
+                                        width: 25,
+                                        boxShape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                                //extra badge
+                                if (extraCount > 0)
+                                  Positioned(
+                                    left: displayCount * 15.0,
+                                    child: Container(
+                                      height: 25,
+                                      width: 25,
+                                      decoration: BoxDecoration(
+                                        color: Colors.amberAccent,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.white, width: 1.5),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "+$extraCount",
+                                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     );
                   }),
 
-                  SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Obx(() {
-                        final userModel = vendorProfileController.userProfileModel.value;
-                        return  CustomText(left: 8, text: userModel.fullName.isNotEmpty ? userModel.fullName : "", fontWeight: FontWeight.w600, fontSize: 20, maxLines: 1, overflow: TextOverflow.ellipsis,);
-                      }),
-                      Obx(() {
-                        final gData = gamificationController.gamificationModel.value?.data;
-                        return Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xff1F2937), Color(0xff4B5563)],
+                  const SizedBox(width: 16),
+
+                  /// ================= USER INFO (Expanded to fix Overflow) =================
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(() {
+                          final userModel = vendorProfileController.userProfileModel.value;
+                          return CustomText(
+                            text: userModel.fullName.isNotEmpty ? userModel.fullName : "User Name",
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        }),
+                        const SizedBox(height: 4),
+                        Obx(() {
+                          final gData = gamificationController.gamificationModel.value?.data;
+                          return Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(colors: [Color(0xff1F2937), Color(0xff4B5563)]),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                borderRadius: BorderRadius.circular(30),
+                                child: Text(
+                                  gData != null ? "Level ${gData.currentLevel}" : "Level -",
+                                  style: const TextStyle(color: Colors.amberAccent, fontSize: 12, fontWeight: FontWeight.w500),
+                                ),
                               ),
-                              child: CustomText(
-                                text: gData != null ? "Level ${gData.currentLevel}" : "Level -",
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.amberAccent,
+                              const SizedBox(width: 8),
+                              Expanded( // লেভেল টাইটেল বড় হলে যাতে এরর না দেয়
+                                child: Text(
+                                  gData?.levelTitle ?? "",
+                                  style: const TextStyle(color: Colors.black45, fontSize: 14, fontWeight: FontWeight.w500),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                            CustomText(
-                              left: 12,
-                              text: gData?.levelTitle ?? "",
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black45,
-                            ),
-                          ],
-                        );
-                      }),
-                    ],
+                            ],
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -127,9 +190,7 @@ class UserProfileScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomText(
-                          text: gData != null
-                              ? "XP: ${gData.currentXP} / ${gData.nextLevelXP} to Level ${gData.currentLevel + 1}"
-                              : "XP: - / -",
+                          text: gData != null ? "XP: ${gData.currentXP} / ${gData.nextLevelXP} to Level ${gData.currentLevel + 1}" : "XP: - / -",
                           fontSize: 14.w,
                           fontWeight: FontWeight.w400,
                         ),
@@ -291,7 +352,8 @@ class UserProfileScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      );
+    }),
       bottomNavigationBar: Navbar(currentIndex: 2),
     );
   }

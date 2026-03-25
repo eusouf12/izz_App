@@ -7,14 +7,7 @@ import '../model/user_gamification_profile_model.dart';
 class UserGamificationController extends GetxController {
   RxBool isLoading = false.obs;
 
-  Rx<UserGamificationProfileModel?> gamificationModel =
-  Rx<UserGamificationProfileModel?>(null);
-
-  @override
-  void onInit() {
-    super.onInit();
-    fetchGamificationProfile();
-  }
+  Rx<UserGamificationProfileModel?> gamificationModel = Rx<UserGamificationProfileModel?>(null);
 
   Future<void> fetchGamificationProfile() async {
     try {
