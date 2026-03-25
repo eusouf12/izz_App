@@ -6,12 +6,14 @@ import '../../../../../../core/app_routes/app_routes.dart';import '../../../../.
 import '../../../../components/custom_loader/custom_loader.dart';
 import '../../../../components/custom_royel_appbar/custom_royel_appbar.dart';
 import '../../../../components/custom_text/custom_text.dart';
+import '../../../vendor_part/vendor_profile_screen/controller/vendor_profile_controller.dart';
 import '../controller/message_controller.dart';
 
   class UserMessageListScreen extends StatelessWidget {
     UserMessageListScreen({super.key});
 
      final MessageController controller = Get.put(MessageController());
+    final VendorProfileController vendorProfileController = Get.put(VendorProfileController());
 
     @override
     Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ import '../controller/message_controller.dart';
           body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Obx(() {
+              final myId =  vendorProfileController.userProfileModel.value.id;
               //========= Loader =========
               if (controller.isChatLoading.value && controller.chatList.isEmpty) {
                 return const Center(child: CustomLoader());
@@ -46,22 +49,23 @@ import '../controller/message_controller.dart';
                   itemBuilder: (context, index) {
                     if (index < controller.chatList.length) {
                       final chat = controller.chatList[index];
+                      final user = myId == chat.person1.id ? chat.person2 : chat.person1;
                       return GestureDetector(
                         onTap: (){
                           debugPrint("${chat.channelName}");
-                          debugPrint("${chat.person2.fullName}");
-                          debugPrint("===============${chat.person2.profileImage}");
+                          debugPrint("${user.fullName}");
+                          debugPrint("===============${user.profileImage}");
                           Get.toNamed(AppRoutes.chatInboxScreen,
                             arguments: {
                               'channelName': chat.channelName,
-                              'userName': chat.person2.fullName,
-                              'userImage': chat.person2.profileImage,
+                              'userName': user.fullName,
+                              'userImage': user.profileImage,
                             },
                           );
                         },
                         child: CustomMessagesListCard(
-                          profileImage: chat.person2.profileImage,
-                          name: chat.person2.fullName,
+                          profileImage: user.profileImage,
+                          name: user.fullName,
                           lastMessage: chat.lastMessage.message,
                           time: chat.createdAt,
                         ),

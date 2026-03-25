@@ -64,24 +64,20 @@ class VendorProfileScreen extends StatelessWidget {
               // =======================================================
 
               const SizedBox(height: 20),
+              //chat
               CustomProfileCard(
                 nameTitle: "Chats",
                 onTap: () {
-                  Get.toNamed(AppRoutes.vendorMessageListScreen);
+                  Get.toNamed(AppRoutes.userMessageListScreen);
                 },
               ),
+              //Edit Profile =======
               CustomProfileCard(
                 nameTitle: "Edit Profile",
                 onTap: () {
                   Get.toNamed(AppRoutes.vendorEditProfileScreen);
                 },
               ),
-              // CustomProfileCard(
-              //   nameTitle: "Account Settings",
-              //   onTap: () {
-              //     Get.toNamed(AppRoutes.vendorAccountSettings);
-              //   },
-              // ),
               CustomProfileCard(
                 nameTitle: "Change Password",
                 onTap: () {
