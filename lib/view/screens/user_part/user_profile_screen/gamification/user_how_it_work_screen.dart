@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:izz_atlas_app/utils/app_colors/app_colors.dart';
 import 'package:izz_atlas_app/utils/app_icons/app_icons.dart';
+import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/components/custom_royel_appbar/custom_royel_appbar.dart';
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_profile_screen/widgets/custom_rules_card.dart';
+import 'package:get/get.dart';
+import '../controller/user_gamification_profile_controller.dart';
 
 class UserHowItWorkScreen extends StatelessWidget {
-  const UserHowItWorkScreen({super.key});
+   UserHowItWorkScreen({super.key});
+   final UserGamificationController gamificationController = Get.put(UserGamificationController());
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      gamificationController.getLevels();
+      gamificationController.fetchGamificationProfile();
+    });
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: CustomRoyelAppbar(
@@ -76,79 +85,126 @@ class UserHowItWorkScreen extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 bottom: 20,
               ),
-              Container(
-                padding: EdgeInsets.all(13),
-                decoration: BoxDecoration(
-                  color: Color(0xFFF111827),
-                  borderRadius: BorderRadius.circular(13),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomText(
-                          text: "Level 1-3",
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.white,
-                        ),
-                        CustomText(
-                          text: "5% off bookings",
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.textClr,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomText(
-                          text: "Level 4-6 (Current)",
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.green,
-                        ),
-                        CustomText(
-                          text: "10% off + Priority",
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.green,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomText(
-                          text: "Level 7-10",
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.white,
-                        ),
-                        CustomText(
-                          text: "15% off + VIP Access",
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.textClr,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              Obx(() {
+                if (gamificationController.isLevelLoading.value) {
+                  return const Center(child: CustomLoader());
+                }
+
+                final levels = gamificationController.levelList;
+                final currentLevel = gamificationController.gamificationModel.value?.data.currentLevel ?? 0;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(levels.length, (index) {
+                    final data = levels[index];
+                    bool isCurrent = (currentLevel == data.level);
+                    bool isUnlocked = (currentLevel ?? 0) >= (data.level ?? 0);
+
+                    return IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Column(
+                            children: [
+                              Container(
+                                width: 12.r,
+                                height: 12.r,
+                                decoration: BoxDecoration(
+                                  color: isCurrent ? AppColors.green : (isUnlocked ? AppColors.green.withOpacity(0.5) : Colors.white24),
+                                  shape: BoxShape.circle,
+                                  boxShadow: isCurrent ? [BoxShadow(color: AppColors.green.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)] : [],
+                                ),
+                              ),
+                              if (index != levels.length - 1)
+                                Expanded(
+                                  child: VerticalDivider(
+                                    color: isUnlocked ? AppColors.green.withOpacity(0.5) : Colors.white10,
+                                    thickness: 2,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          SizedBox(width: 16.w),
+
+                          Expanded(
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 500),
+                              margin: EdgeInsets.only(bottom: 12.h),
+                              padding: EdgeInsets.all(16.r),
+                              decoration: BoxDecoration(
+                                color: isCurrent ? AppColors.green.withOpacity(0.1) :  Color(0xFFF111827),
+                                borderRadius: BorderRadius.circular(16.r),
+                                border: Border.all(
+                                  color: isCurrent ? AppColors.green.withOpacity(0.5) : Colors.white10,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomText(
+                                        text: "Level ${data.level}",
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: isCurrent ? AppColors.green : Colors.white,
+                                      ),
+                                      if (isCurrent)
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.green,
+                                            borderRadius: BorderRadius.circular(20.r),
+                                          ),
+                                          child: CustomText(text: "Current", fontSize: 10.sp, color: Colors.black, fontWeight: FontWeight.bold),
+                                        ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 8.h),
+
+                                  Wrap(
+                                    spacing: 6.w,
+                                    runSpacing: 6.h,
+                                    children: (data.benefits ?? []).map((benefit) {
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.05),
+                                          borderRadius: BorderRadius.circular(8.r),
+                                        ),
+                                        child: CustomText(
+                                          text: "• ${benefit.replaceAll('_', ' ').capitalizeFirst}",
+                                          fontSize: 11.sp,
+                                          color: isCurrent ? AppColors.green.withOpacity(0.9) : Colors.white70,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                );
+              }),
               SizedBox(height: 30,),
-              Container(
-                width: MediaQuery.sizeOf(context).width,
-                padding: EdgeInsets.all(23),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [Color(0xFFF9CA3AF), Color(0xFFF7BDB87)]),
-                  borderRadius: BorderRadius.circular(17),
+              GestureDetector(
+                onTap: (){
+                  Get.back();
+                },
+                child: Container(
+                  width: MediaQuery.sizeOf(context).width,
+                  padding: EdgeInsets.all(23),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [Color(0xFFF9CA3AF), Color(0xFFF7BDB87)]),
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                  child: CustomText(text: "Start Earning Rewards", fontSize: 20, fontWeight: FontWeight.w700,)
                 ),
-                child: CustomText(text: "Start Earning Rewards", fontSize: 20, fontWeight: FontWeight.w700,)
               ),
               SizedBox(height: 60,)
             ],

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../../../service/api_client.dart';
 import '../../../../../service/api_url.dart';
 import '../../../../../utils/ToastMsg/toast_message.dart';
+import '../model/level_model.dart';
 import '../model/streak_model.dart';
 import '../model/user_gamification_profile_model.dart';
 
@@ -86,5 +87,33 @@ class UserGamificationController extends GetxController {
       isClaimLoading.value = false;
     }
   }
+
+  // level controller===========
+  RxList<LevelData> levelList = <LevelData>[].obs;
+  RxBool isLevelLoading = false.obs;
+
+  Future<void> getLevels() async {
+
+    try {
+      isLevelLoading.value = true;
+
+      final response = await ApiClient.getData(ApiUrl.levelDetails);
+
+      final jsonResponse = response.body is String ? jsonDecode(response.body) : response.body;
+
+      if (response.statusCode == 200) {
+        final model = LevelResponse.fromJson(jsonResponse);
+        levelList.assignAll(model.data ?? []);
+      } else {
+        showCustomSnackBar(jsonResponse["message"] ?? "Failed to fetch levels", isError: true,);
+      }
+
+    } catch (e) {
+      showCustomSnackBar(e.toString(), isError: true);
+    } finally {
+      isLevelLoading.value = false;
+    }
+  }
+
 
 }

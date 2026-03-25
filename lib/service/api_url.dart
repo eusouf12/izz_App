@@ -41,6 +41,7 @@ class ApiUrl {
   static String getAllChat({required String channelName,required String page}) => "/messages/get-message/$channelName/?page=$page&limit=10";
   static String userStreak = "/gamification/streaks";
   static String climeReward = "/gamification/award-xp";
+  static String levelDetails = "/gamification/level/all";
   static String getSportsTypes({required String page, String? search}) {
     String url = "/sports-types?page=$page&limit=10";
     if (search != null && search.isNotEmpty) {
