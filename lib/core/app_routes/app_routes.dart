@@ -20,10 +20,10 @@ import '../../view/screens/user_part/user_message_list_screen/view/user_message_
 import '../../view/screens/user_part/user_message_list_screen/view/chat_inbox_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_about_us_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_change_password_screen.dart';
-import '../../view/screens/user_part/user_profile_screen/user_collect_screen.dart';
+import '../../view/screens/user_part/user_profile_screen/gamification/user_collect_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_edit_profile_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_help_support_screen.dart';
-import '../../view/screens/user_part/user_profile_screen/user_how_it_work_screen.dart';
+import '../../view/screens/user_part/user_profile_screen/gamification/user_how_it_work_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_privacy_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_profile_screen.dart';
 import '../../view/screens/user_part/user_profile_screen/user_terms_screen.dart';

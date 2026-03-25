@@ -185,13 +185,21 @@ class UserProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomText(
-                          text: gData != null ? "XP: ${gData.currentXP} / ${gData.nextLevelXP} to Level ${gData.currentLevel + 1}" : "XP: - / -",
-                          fontSize: 14.w,
-                          fontWeight: FontWeight.w400,
+
+                        Expanded(
+                          child: CustomText(
+                            text: gData != null ? "XP: ${gData.currentXP} / ${gData.nextLevelXP} to Level ${gData.currentLevel + 1}" : "XP: - / -",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w400,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.start,
+                          ),
                         ),
+
+                        const SizedBox(width: 8),
                         GestureDetector(
                           onTap: () {
                             Get.toNamed(AppRoutes.userCollectScreen);

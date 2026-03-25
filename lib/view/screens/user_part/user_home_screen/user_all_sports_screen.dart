@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_fuilter_screen.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_controller/sports_type_controller.dart';
 import '../../../../core/app_routes/app_routes.dart';
 import '../../../../utils/app_colors/app_colors.dart';
 import '../../../../utils/app_const/app_const.dart';
-import '../../../../utils/app_icons/app_icons.dart';
-import '../../../components/custom_image/custom_image.dart';
 import '../../../components/custom_loader/custom_loader.dart';
 import '../../../components/custom_netwrok_image/custom_network_image.dart';
 import '../../../components/custom_royel_appbar/custom_royel_appbar.dart';

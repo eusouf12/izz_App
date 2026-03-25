@@ -6,29 +6,31 @@ import 'package:izz_atlas_app/view/components/custom_image/custom_image.dart';
 import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/components/custom_netwrok_image/custom_network_image.dart';
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
-import '../../../../core/app_routes/app_routes.dart';
-import '../../../../utils/app_colors/app_colors.dart';
-import '../../../components/custom_royel_appbar/custom_royel_appbar.dart';
-import '../../vendor_part/vendor_profile_screen/controller/vendor_profile_controller.dart';
-import '../user_home_screen/widgets/custom_home_card.dart';
-import '../user_home_screen/widgets/custom_streak.dart';
-import 'controller/user_gamification_profile_controller.dart';
+import '../../../../../core/app_routes/app_routes.dart';
+import '../../../../../utils/app_colors/app_colors.dart';
+import '../../../../components/custom_royel_appbar/custom_royel_appbar.dart';
+import '../../../vendor_part/vendor_profile_screen/controller/vendor_profile_controller.dart';
+import '../../user_home_screen/widgets/custom_home_card.dart';
+import '../../user_home_screen/widgets/custom_streak.dart';
+import '../controller/user_gamification_profile_controller.dart';
 
 class UserCollectScreen extends StatelessWidget {
   UserCollectScreen({super.key});
 
   final VendorProfileController vendorProfileController = Get.put(VendorProfileController());
-
   final UserGamificationController gamificationController = Get.put(UserGamificationController());
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      vendorProfileController.getUserProfile();
+      gamificationController.fetchGamificationProfile();
+      gamificationController.getUserStreak();
+    });
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: const CustomRoyelAppbar(
-        leftIcon: true,
-        titleName: "Collect",
-      ),
+      appBar: const CustomRoyelAppbar(leftIcon: true, titleName: "Collect",),
+
       body: Obx(() {
         if (gamificationController.isLoading.value) {
           return const Center(child: CustomLoader());
@@ -56,27 +58,72 @@ class UserCollectScreen extends StatelessWidget {
                     Row(
                       children: [
                         Obx(() {
-                          final user = vendorProfileController.userProfileModel.value;
+                          final userModel = vendorProfileController.userProfileModel.value;
+                          final userGamification = gamificationController.gamificationModel.value?.data;
+                          final badges = userGamification?.badges ?? [];
+
+                          int displayLimit = 3;
+                          int totalBadges = badges.length;
+                          int displayCount = totalBadges > displayLimit ? displayLimit : totalBadges;
+                          int extraCount = totalBadges > displayLimit ? totalBadges - displayLimit : 0;
+
                           return Stack(
                             clipBehavior: Clip.none,
                             children: [
                               CustomNetworkImage(
-                                imageUrl: user.photo.isNotEmpty
-                                    ? user.photo
-                                    : AppConstants.profileImage,
+                                imageUrl: (userModel.photo.isNotEmpty) ? userModel.photo : AppConstants.profileImage,
                                 height: 80,
                                 width: 80,
                                 boxShape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.amberAccent,
-                                  width: 2,
-                                ),
+                                border: Border.all(color: Colors.amberAccent, width: 2),
                               ),
                               Positioned(
-                                bottom: -10,
-                                right: -16,
-                                child: CustomImage(
-                                  imageSrc: AppIcons.powerIcon,
+                                bottom: -12,
+                                right: -8,
+                                child: SizedBox(
+                                  height: 30,
+                                  width: 70,
+                                  child: Stack(
+                                    children: [
+                                      ...List.generate(displayCount, (index) {
+                                        return Positioned(
+                                          left: index * 15.0,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: Colors.white, width: 1.5),
+                                            ),
+                                            child: CustomNetworkImage(
+                                              imageUrl: badges[index].iconUrl,
+                                              height: 25,
+                                              width: 25,
+                                              boxShape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                      //extra badge
+                                      if (extraCount > 0)
+                                        Positioned(
+                                          left: displayCount * 15.0,
+                                          child: Container(
+                                            height: 25,
+                                            width: 25,
+                                            decoration: BoxDecoration(
+                                              color: Colors.amberAccent,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: Colors.white, width: 1.5),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "+$extraCount",
+                                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -223,17 +270,23 @@ class UserCollectScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Container(
-                        width: 100,
-                        height: 35,
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius: BorderRadius.circular(13),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Redeem",
-                            style: TextStyle(color: Colors.white),
+                      // =========== Redeem Button ===========
+                      GestureDetector(
+                        onTap: (){
+
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent,
+                            borderRadius: BorderRadius.circular(13),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Redeem",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
                       ),
@@ -255,7 +308,7 @@ class UserCollectScreen extends StatelessWidget {
                   child: Row(
                     children: data.achievements.map((a) {
                       return CustomHomeCard(
-                        imagesrc: AppIcons.starIcon,
+                        imagesrc: a.iconUrl!.isNotEmpty ? a.iconUrl : AppIcons.starIcon,
                         name: a.name,
                       );
                     }).toList(),
@@ -265,10 +318,18 @@ class UserCollectScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 /// ---------------- Streak ----------------
-                StreakTrackerCard(
-                  streakDays: data.streakDays,
-                  totalDays: 7,
-                ),
+                Obx(() {
+                  final streak = gamificationController.streakList.first;
+
+                  return StreakTrackerCard(
+                    streakDays: streak.currentStreak ?? 1,
+                    totalDays: 7,
+                    onClaim: () {
+                      gamificationController.claimStreakReward();
+                    },
+                  );
+                }),
+
 
                 const SizedBox(height: 20),
 

@@ -203,6 +203,7 @@ class Badge {
 class Achievement {
   String id;
   String name;
+  String? iconUrl;
   String description;
   int progress;
   int targetValue;
@@ -212,6 +213,7 @@ class Achievement {
 
   Achievement({
     required this.id,
+    this.iconUrl,
     required this.name,
     required this.description,
     required this.progress,
@@ -225,6 +227,7 @@ class Achievement {
     return Achievement(
       id: json['id'],
       name: json['name'],
+      iconUrl: json['iconUrl'] ?? "",
       description: json['description'],
       progress: json['progress'],
       targetValue: json['targetValue'],

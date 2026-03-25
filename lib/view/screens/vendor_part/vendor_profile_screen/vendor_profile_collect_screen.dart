@@ -313,7 +313,7 @@ class VendorProfileCollectScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20,),
-              StreakTrackerCard(streakDays: 4, totalDays: 7),
+              StreakTrackerCard(streakDays: 4, totalDays: 7, onClaim: () {  },),
               SizedBox(height: 20,),
               Container(
                 width: MediaQuery.sizeOf(context).width,

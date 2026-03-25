@@ -39,6 +39,8 @@ class ApiUrl {
   static String initialSendText({required String id}) => "/messages/send-message/$id";
   static String chatList({required String page}) => "/messages/channels?page=$page&limit=10";
   static String getAllChat({required String channelName,required String page}) => "/messages/get-message/$channelName/?page=$page&limit=10";
+  static String userStreak = "/gamification/streaks";
+  static String climeReward = "/gamification/award-xp";
   static String getSportsTypes({required String page, String? search}) {
     String url = "/sports-types?page=$page&limit=10";
     if (search != null && search.isNotEmpty) {

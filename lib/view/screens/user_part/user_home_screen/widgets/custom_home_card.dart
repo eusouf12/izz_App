@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:izz_atlas_app/view/components/custom_netwrok_image/custom_network_image.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../components/custom_image/custom_image.dart';
 import '../../../../components/custom_text/custom_text.dart';
@@ -24,11 +25,7 @@ class CustomHomeCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              CustomImage(
-                imageSrc: imagesrc?? "",
-                height: 30,
-                width: 30,
-              ),
+              CustomNetworkImage(imageUrl: imagesrc ?? "https://i.ibb.co/yJJ4q0f/icon.png", height: 30, width: 30),
               CustomText(
                 top: 8,
                 text: name ??"",

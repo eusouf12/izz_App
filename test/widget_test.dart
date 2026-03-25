@@ -1,29 +1,30 @@
-// This is a basic Flutter model test.
-//
-// To perform an interaction with a model in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the model
-// tree, read text, and verify that the values of model properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/main.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:izz_atlas_app/view/screens/user_part/user_profile_screen/user_profile_screen.dart';
+import 'package:izz_atlas_app/view/screens/vendor_part/vendor_profile_screen/controller/vendor_profile_controller.dart';
+import 'package:izz_atlas_app/view/screens/user_part/user_profile_screen/controller/user_gamification_profile_controller.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Profile Screen UI Test with ScreenUtil', (WidgetTester tester) async {
+    // ১. কন্ট্রোলারগুলো ইনজেক্ট করা
+    Get.put(VendorProfileController());
+    Get.put(UserGamificationController());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // ২. ScreenUtilInit দিয়ে র‍্যাপ করা যাতে LateInitializationError না আসে
+    await tester.pumpWidget(
+      ScreenUtilInit(
+        designSize: const Size(360, 690), // আপনার অ্যাপের ডিজাইন সাইজ দিন
+        minTextAdapt: true,
+        builder: (context, child) => GetMaterialApp(
+          home: UserProfileScreen(),
+        ),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Logout'), findsOneWidget);
   });
 }
