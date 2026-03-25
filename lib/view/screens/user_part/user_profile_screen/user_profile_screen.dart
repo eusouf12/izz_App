@@ -46,7 +46,7 @@ class UserProfileScreen extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  /// ================= PROFILE IMAGE & BADGES =================
+                  //================= PROFILE IMAGE & BADGES =================
                   Obx(() {
                     final userModel = vendorProfileController.userProfileModel.value;
                     final userGamification = gamificationController.gamificationModel.value?.data;
@@ -119,10 +119,8 @@ class UserProfileScreen extends StatelessWidget {
                       ],
                     );
                   }),
-
                   const SizedBox(width: 16),
-
-                  /// ================= USER INFO (Expanded to fix Overflow) =================
+                  // ================= USER INFO (Expanded to fix Overflow) =================
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +153,7 @@ class UserProfileScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Expanded( // লেভেল টাইটেল বড় হলে যাতে এরর না দেয়
+                              Expanded(
                                 child: Text(
                                   gData?.levelTitle ?? "",
                                   style: const TextStyle(color: Colors.black45, fontSize: 14, fontWeight: FontWeight.w500),
