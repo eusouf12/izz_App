@@ -4,6 +4,8 @@ class ApiUrl {
   static const String baseUrl = "https://imposed-dedicated-endangered-plots.trycloudflare.com/api/v1";
   static const String websocket = "https://sports-izz-122-backend.onrender.com";
 
+  static String mapKey = "AIzaSyBuSZJklSc1j0D4kqhkJcmyArcZbWujbXQ";
+
   /// ================= AUTHENTICATION =================
   static const String signUp = "/users";
   static const String signIn = "/auth/login";
@@ -42,6 +44,8 @@ class ApiUrl {
   static String userStreak = "/gamification/streaks";
   static String climeReward = "/gamification/award-xp";
   static String levelDetails = "/gamification/level/all";
+  static String nearByEvent({required String page,required String lat,required String lon}) => "/venues/nearby-me?page=$page&limit=10&userslatitude= $lat&userslongitude= $lon";
+
   static String getSportsTypes({required String page, String? search}) {
     String url = "/sports-types?page=$page&limit=10";
     if (search != null && search.isNotEmpty) {

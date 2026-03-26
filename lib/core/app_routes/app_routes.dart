@@ -10,6 +10,7 @@ import '../../view/screens/splash_screen/splash_screen.dart';
 import '../../view/screens/user_part/my_booking_screen/my_booking_screen.dart';
 import '../../view/screens/user_part/my_booking_screen/user_my_bookings_screen.dart';
 import '../../view/screens/user_part/user_home_screen/book_your_slot_screen.dart';
+import '../../view/screens/user_part/user_home_screen/map_screen.dart';
 import '../../view/screens/user_part/user_home_screen/user_all_sports_screen.dart';
 import '../../view/screens/user_part/user_home_screen/user_home_screen.dart';
 import '../../view/screens/user_part/user_home_screen/user_notification_screen.dart';
@@ -101,6 +102,7 @@ class AppRoutes {
   static const String venueDetailsScreen = "/VenueDetailsScreen";
   static const String venueAvailabilityScreen = "/VenueAvailabilityScreen";
   static const String chatInboxScreen = "/ChatInboxScreen";
+  static const String fullscreenMapScreenNonEvent = "/FullscreenMapScreenNonEvent";
 
 
   static List<GetPage> routes = [
@@ -129,6 +131,7 @@ class AppRoutes {
     GetPage(name: setNewPassword, page: () => SetNewPassword()),
     GetPage(name: userReviewScreen, page: () => UserReviewScreen(venueId: '',)),
     GetPage(name: chatInboxScreen, page: () => ChatInboxScreen()),
+    GetPage(name: fullscreenMapScreenNonEvent, page: () => FullscreenMapScreenNonEvent()),
 
 
     ///===========================Vendor Part ==========================

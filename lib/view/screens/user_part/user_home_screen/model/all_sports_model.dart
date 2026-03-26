@@ -59,8 +59,6 @@ class Meta {
   }
 }
 
-// ================= Group By Sports =================
-
 class SportsVenueGroup {
   final String sportsType;
   final String? sportsImage;
@@ -86,8 +84,6 @@ class SportsVenueGroup {
   }
 }
 
-// ================= Venue =================
-
 class Venue {
   final String id;
   final String venueName;
@@ -98,16 +94,15 @@ class Venue {
   final bool venueStatus;
   final String description;
   final String venueImage;
-
+  final double latitude;
+  final double longitude;
+  final double distance;
   final List<Amenity> amenities;
   final List<int> courtNumbers;
-
-  // 🔹 NEW FIELDS FROM BACKEND
   final String everyServiceStatus;
   final String venueRating;
   final int venueReviewCount;
   final List<Review> reviews;
-
   final String createdAt;
   final String updatedAt;
   final String vendorId;
@@ -123,6 +118,9 @@ class Venue {
     required this.venueStatus,
     required this.description,
     required this.venueImage,
+    required this.latitude,
+    required this.longitude,
+    required this.distance,
     required this.amenities,
     required this.courtNumbers,
     required this.everyServiceStatus,
@@ -137,41 +135,31 @@ class Venue {
 
   factory Venue.fromJson(Map<String, dynamic> json) {
     return Venue(
-      id: json['id'],
-      venueName: json['venueName'],
-      sportsType: json['sportsType'],
-      pricePerHour: json['pricePerHour'],
-      capacity: json['capacity'],
-      location: json['location'],
-      venueStatus: json['venueStatus'],
-      description: json['description'],
+      id: json['id'] ?? '',
+      venueName: json['venueName'] ?? '',
+      sportsType: json['sportsType'] ?? '',
+      pricePerHour: (json['pricePerHour'] ?? 0).toInt(),
+      capacity: (json['capacity'] ?? 0).toInt(),
+      location: json['location'] ?? '',
+      venueStatus: json['venueStatus'] ?? false,
+      description: json['description'] ?? '',
       venueImage: json['venueImage'] ?? '',
-      amenities: (json['amenities'] as List)
-          .map((e) => Amenity.fromJson(e))
-          .toList(),
-      courtNumbers: List<int>.from(json['courtNumbers']),
-
-      // 🔹 Backend aligned
+      latitude: (json['latitude'] ?? 0.0).toDouble(),
+      longitude: (json['longitude'] ?? 0.0).toDouble(),
+      distance: (json['distance'] ?? 0.0).toDouble(),
+      amenities: json['amenities'] != null ? (json['amenities'] as List).map((e) => Amenity.fromJson(e)).toList() : [],
+      courtNumbers: json['courtNumbers'] != null ? List<int>.from(json['courtNumbers']) : [],
       everyServiceStatus: json['EveryServiceStatus'] ?? '',
-      venueRating: json['venueRating'] ?? '0',
-      venueReviewCount: json['venueReviewCount'] ?? 0,
-      reviews: json['reviews'] == null
-          ? []
-          : (json['reviews'] as List)
-          .map((e) => Review.fromJson(e))
-          .toList(),
-
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      vendorId: json['vendorId'],
-      venueAvailabilities: (json['venueAvailabilities'] as List)
-          .map((e) => VenueAvailability.fromJson(e))
-          .toList(),
+      venueRating: json['venueRating']?.toString() ?? '0',
+      venueReviewCount: (json['venueReviewCount'] ?? 0).toInt(),
+      reviews: json['reviews'] == null ? [] : (json['reviews'] as List).map((e) => Review.fromJson(e)).toList(),
+      createdAt: json['createdAt'] ?? '',
+      updatedAt: json['updatedAt'] ?? '',
+      vendorId: json['vendorId'] ?? '',
+      venueAvailabilities: json['venueAvailabilities'] != null ? (json['venueAvailabilities'] as List).map((e) => VenueAvailability.fromJson(e)).toList() : [],
     );
   }
 }
-
-// ================= User Venue Details =================
 
 class UserVenueDetailsModel {
   final bool success;
@@ -193,7 +181,6 @@ class UserVenueDetailsModel {
   }
 }
 
-// ================= Amenity =================
 
 class Amenity {
   final String amenityName;
@@ -207,7 +194,6 @@ class Amenity {
   }
 }
 
-// ================= Availability =================
 
 class VenueAvailability {
   final String id;

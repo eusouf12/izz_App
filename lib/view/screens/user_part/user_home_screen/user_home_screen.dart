@@ -204,9 +204,14 @@ class UserHomeScreen extends StatelessWidget {
                   }),
 
                   SizedBox(height: 16),
-                  CustomNearbyContainer(
-                    imageUrl: AppConstants.nearbyVenuesImage,
-                    title: "NEARBY VENUES",
+                  GestureDetector(
+                    onTap: (){
+                      Get.toNamed(AppRoutes.fullscreenMapScreenNonEvent);
+                    },
+                    child: CustomNearbyContainer(
+                      imageUrl: AppConstants.nearbyVenuesImage,
+                      title: "NEARBY VENUES",
+                    ),
                   ),
                   CustomNearbyContainer(
                     imageUrl: AppConstants.allSportsImage,
