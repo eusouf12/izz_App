@@ -45,29 +45,37 @@ class CustomMyVenuesMainCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        CustomImage(imageSrc: iconData ?? AppIcons.venues1),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomText(
-                              left: 8,
-                              text: title ?? "Green Valley Football",
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.white,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          CustomImage(imageSrc: iconData ?? AppIcons.venues1),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  left: 0,
+                                  text: title ?? "Unknown Venue",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.white,
+                                  maxLines: 1,
+                                ),
+                                CustomText(
+                                  left: 0,
+                                  text: subTitle ?? "Unknown Location",
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.textClr,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ],
                             ),
-                            CustomText(
-                              left: 8,
-                              text: subTitle ?? "Dhaka, Bangladesh",
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.textClr,
-                            ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -85,14 +93,7 @@ class CustomMyVenuesMainCard extends StatelessWidget {
                             color: AppColors.black,
                           ),
                         ),
-                        CustomText(
-                          top: 10,
-                          text: "No Review yet",
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textClr,
-                        ),
-                      ],
+                         ],
                     )
                   ],
                 ),
