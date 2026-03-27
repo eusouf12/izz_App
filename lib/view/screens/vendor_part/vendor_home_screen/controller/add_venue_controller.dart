@@ -5,12 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:izz_atlas_app/view/screens/vendor_part/vendor_home_screen/controller/vendor_my_venue_controller.dart';
 import '../../../../../service/api_client.dart';
 import '../../../../../service/api_url.dart';
 import '../../../user_part/user_home_screen/model/sports_type_model.dart';
 import '../../../user_part/user_home_screen/user_home_controller/sports_type_controller.dart';
 
 class AddVenueController extends GetxController {
+  final VendorMyVenueController vendorMyVenueController = Get.put(VendorMyVenueController());
   // Text Controllers
   final TextEditingController venueNameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -83,42 +85,47 @@ class AddVenueController extends GetxController {
 
   // Search locations using Nominatim (OpenStreetMap) with a short debounce
   void searchLocations(String query) {
-    // Cancel previous debounce timer
-    if (_locationDebounce?.isActive ?? false) _locationDebounce!.cancel();
+  if (_locationDebounce?.isActive ?? false) _locationDebounce!.cancel();
 
-    _locationDebounce = Timer(const Duration(milliseconds: 300), () async {
-      final q = query.trim();
-      if (q.isEmpty) {
-        locationSuggestions.clear();
-        return;
-      }
+  _locationDebounce = Timer(const Duration(milliseconds: 500), () async {
+    final q = query.trim();
+    if (q.isEmpty) {
+      locationSuggestions.clear();
+      return;
+    }
 
-      try {
-        final url = Uri.parse('https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(q)}&format=json&addressdetails=1&limit=6&accept-language=en');
-        final resp = await http.get(url, headers: {
-          'User-Agent': 'izz_atlas_app',
-          'Accept-Language': 'en'
-        });
-        if (resp.statusCode == 200) {
-          final List data = jsonDecode(resp.body) as List;
-          final suggestions = data.map<Map<String, dynamic>>((e) {
-            final display = (e['display_name'] ?? '') as String;
-            return {
-              'name': display.split(',').first,
-              'address': display,
-              'lat': double.tryParse((e['lat'] ?? '0').toString()) ?? 0.0,
-              'lon': double.tryParse((e['lon'] ?? '0').toString()) ?? 0.0,
-            };
-          }).toList();
-          locationSuggestions.assignAll(suggestions);
-        } else {
-          locationSuggestions.clear();
-        }
-      } catch (e) {
-        locationSuggestions.clear();
+    try {
+      // Google Places Autocomplete API URL
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json'
+        '?input=${Uri.encodeComponent(q)}'
+        '&key=${ApiUrl.mapKey}' 
+        '&language=en'
+      );
+
+      final resp = await http.get(url);
+      
+      if (resp.statusCode == 200) {
+        final data = jsonDecode(resp.body);
+        final predictions = data['predictions'] as List;
+
+        final suggestions = predictions.map<Map<String, dynamic>>((e) {
+          return {
+            'name': e['structured_formatting']['main_text'],
+            'address': e['description'],
+            'place_id': e['place_id'],
+          };
+        }).toList();
+        
+        locationSuggestions.assignAll(suggestions);
+        
       }
-    });
-  }
+    } catch (e) {
+      debugPrint("Google Search Error: $e");
+      locationSuggestions.clear();
+    }
+  });
+}
 
   // When user taps a suggestion
   void selectLocation(Map<String, dynamic> suggestion) {
@@ -367,6 +374,7 @@ class AddVenueController extends GetxController {
       isLoading.value = false;
       if (response.statusCode == 200 || response.statusCode == 201) {
         _clearFields();
+        vendorMyVenueController.getMyVenues();
         Get.back();
         Get.snackbar(
           "Success",

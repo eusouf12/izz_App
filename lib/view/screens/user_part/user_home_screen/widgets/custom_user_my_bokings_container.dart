@@ -32,6 +32,8 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
   final bool isPayment;
   final bool isAccept;
   final bool isReject;
+  final bool isAcceptLoading;
+  final bool isRejectLoading;
 
   const CustomUserMyBokingsContainer({
     super.key,
@@ -58,6 +60,8 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
     this.isReject = false,
     this.onAcceptTap,
     this.onRejectTap,
+    this.isAcceptLoading = false,
+    this.isRejectLoading = false,
   });
 
   @override
@@ -270,29 +274,59 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: CustomButtonTwo(
-                              onTap: onAcceptTap ?? () {},
-                              title: "ACCEPT",
-                              textColor: AppColors.white,
-                              fillColor: AppColors.blue,
-                              borderColor: AppColors.blue,
-                              borderWidth: 1,
-                              isBorder: true,
-                              height: 46,
-                            ),
+                            child: isAcceptLoading
+                                ? Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.blue,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: const Center(
+                                      child: SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                                      ),
+                                    ),
+                                  )
+                                : CustomButtonTwo(
+                                    onTap: onAcceptTap ?? () {},
+                                    title: "ACCEPT",
+                                    textColor: AppColors.white,
+                                    fillColor: AppColors.blue,
+                                    borderColor: AppColors.blue,
+                                    borderWidth: 1,
+                                    isBorder: true,
+                                    height: 46,
+                                  ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: CustomButtonTwo(
-                              onTap: onRejectTap ?? () {},
-                              title: "REJECT",
-                              textColor: AppColors.white,
-                              fillColor: AppColors.red,
-                              borderColor: AppColors.red,
-                              borderWidth: 1,
-                              isBorder: true,
-                              height: 46,
-                            ),
+                            child: isRejectLoading
+                                ? Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.red,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: const Center(
+                                      child: SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                                      ),
+                                    ),
+                                  )
+                                : CustomButtonTwo(
+                                    onTap: onRejectTap ?? () {},
+                                    title: "REJECT",
+                                    textColor: AppColors.white,
+                                    fillColor: AppColors.red,
+                                    borderColor: AppColors.red,
+                                    borderWidth: 1,
+                                    isBorder: true,
+                                    height: 46,
+                                  ),
                           ),
                         ],
                       ),

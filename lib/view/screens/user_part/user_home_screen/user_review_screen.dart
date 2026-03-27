@@ -4,20 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_controller/review_controller.dart';
 import '../../../../utils/app_colors/app_colors.dart';
-import '../../../components/custom_text/custom_text.dart';  // Import your controller
+import '../../../components/custom_text/custom_text.dart'; 
 
 class UserReviewScreen extends StatelessWidget {
-  final String venueId;
-
-  const UserReviewScreen({super.key, required this.venueId});
+   UserReviewScreen({super.key});
+   final venuId = Get.arguments['venueId'];
 
   @override
   Widget build(BuildContext context) {
     final UserReviewController controller = Get.put(UserReviewController());
-
-    // Set the venueId to trigger fetching the reviews
-    controller.venueId.value = venueId;
-
     // Fetch reviews when the screen is initialized
     controller.fetchReviews();
 

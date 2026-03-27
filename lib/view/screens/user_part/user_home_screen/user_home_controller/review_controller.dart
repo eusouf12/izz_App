@@ -11,7 +11,6 @@ class UserReviewController extends GetxController {
   var isLoadMore = false.obs;
   int currentPage = 1;
   int totalPage = 1;
-  var venueId = ''.obs;
   var errorMessage = ''.obs;
 
   // Method to fetch reviews for a specific venue

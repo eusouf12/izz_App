@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../service/api_client.dart';
@@ -13,6 +14,9 @@ class VendorMyBookingController extends GetxController {
   var isLoading = true.obs;
   var isMoreLoading = false.obs;
   var totalBookings = 0.obs;
+
+  var acceptLoaderIds = <String>[].obs;
+  var rejectLoaderIds = <String>[].obs;
 
   int currentPage = 1;
   int totalPages = 1;
@@ -86,17 +90,23 @@ class VendorMyBookingController extends GetxController {
   }
 
   /// ======================== Accept Booking ========================
+  var isAcceptedLoading = true.obs;
   Future<void> acceptBooking(String bookingId) async {
     try {
-      final response = await ApiClient.postData(ApiUrl.acceptBooking(id: bookingId),null);
+      acceptLoaderIds.add(bookingId);
+      final response = await ApiClient.postData(ApiUrl.acceptBooking(id: bookingId), jsonEncode({}));
 
       if (response.statusCode == 200 && response.body != null) {
-        Get.back();
-        fetchInitialBookings(tabNameList[currentIndex.value]);
+        int index = bookings.indexWhere((b) => b.id == bookingId);
+        if (index != -1) {
+          bookings[index].bookingStatus = "CONFIRMED";
+          bookings.refresh();
+        }
       }
     } catch (e) {
       debugPrint("Vendor booking error: $e");
     } finally {
+      acceptLoaderIds.remove(bookingId);
       isLoading.value = false;
       isMoreLoading.value = false;
     }
@@ -105,15 +115,20 @@ class VendorMyBookingController extends GetxController {
   /// ======================== Reject Booking ========================
   Future<void> rejectBooking(String bookingId) async {
     try {
-      final response = await ApiClient.postData(ApiUrl.rejectBooking(id: bookingId),null);
+      rejectLoaderIds.add(bookingId);
+      final response = await ApiClient.postData(ApiUrl.rejectBooking(id: bookingId), jsonEncode({}));
 
       if (response.statusCode == 200 && response.body != null) {
-        Get.back();
-        fetchInitialBookings(tabNameList[currentIndex.value]);
+        int index = bookings.indexWhere((b) => b.id == bookingId);
+        if (index != -1) {
+          bookings[index].bookingStatus = "CANCELLED";
+          bookings.refresh();
+        }
       }
     } catch (e) {
       debugPrint("Vendor booking error: $e");
     } finally {
+      rejectLoaderIds.remove(bookingId);
       isLoading.value = false;
       isMoreLoading.value = false;
     }

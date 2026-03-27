@@ -29,12 +29,14 @@ class UserVenueDetailsScreen extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) {
     //  final dynamic argument = Get.arguments;
       final venuId = arg['venueId'];
-       pageName = arg['page'];
+      pageName = arg['page'];
+      final vendorId = arg['vendorId'];
       if (venuId != null && venuId is String && venuId.isNotEmpty) {
         controller.getVenueDetails(venuId);
-      } else {
-        debugPrint("Error: Venue ID not found or invalid format in arguments");
-      }
+      } 
+      if (vendorId != null) {
+          messageController.getVendorExist(id: vendorId);
+        }
     });
 
     return Scaffold(

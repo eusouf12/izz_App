@@ -41,8 +41,7 @@ class VendorBookingRequestScreen extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 /// First loading
-                if (controller.isLoading.value &&
-                    controller.bookings.isEmpty) {
+                if (controller.isLoading.value && controller.bookings.isEmpty) {
                   return const Center(child: CustomLoader());
                 }
 
@@ -104,6 +103,8 @@ class VendorBookingRequestScreen extends StatelessWidget {
                             isPayment: false,
                             isAccept: booking.bookingStatus == "PENDING" ? true : false,
                             isReject: booking.bookingStatus == "PENDING" ? true : false,
+                            isAcceptLoading: controller.acceptLoaderIds.contains(booking.id),
+                            isRejectLoading: controller.rejectLoaderIds.contains(booking.id),
                             onViewDetailsTap: (){
                               Get.toNamed(AppRoutes.venueDetailsScreen, arguments: booking.venue?.id);
                             },
