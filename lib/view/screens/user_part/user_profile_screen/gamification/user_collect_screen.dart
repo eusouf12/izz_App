@@ -6,6 +6,7 @@ import 'package:izz_atlas_app/view/components/custom_image/custom_image.dart';
 import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/components/custom_netwrok_image/custom_network_image.dart';
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../../core/app_routes/app_routes.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../components/custom_royel_appbar/custom_royel_appbar.dart';
@@ -17,8 +18,12 @@ import '../controller/user_gamification_profile_controller.dart';
 class UserCollectScreen extends StatelessWidget {
   UserCollectScreen({super.key});
 
-  final VendorProfileController vendorProfileController = Get.put(VendorProfileController());
-  final UserGamificationController gamificationController = Get.put(UserGamificationController());
+  final VendorProfileController vendorProfileController = Get.put(
+    VendorProfileController(),
+  );
+  final UserGamificationController gamificationController = Get.put(
+    UserGamificationController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,7 @@ class UserCollectScreen extends StatelessWidget {
     });
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: const CustomRoyelAppbar(leftIcon: true, titleName: "Collect",),
+      appBar: const CustomRoyelAppbar(leftIcon: true, titleName: "Collect"),
 
       body: Obx(() {
         if (gamificationController.isLoading.value) {
@@ -43,7 +48,9 @@ class UserCollectScreen extends StatelessWidget {
         }
 
         // Safe progress calculation (backend driven)
-        final double progress = data.nextLevelXP == 0 ? 0 : (data.currentXP / data.nextLevelXP).clamp(0.0, 1.0);
+        final double progress = data.nextLevelXP == 0
+            ? 0
+            : (data.currentXP / data.nextLevelXP).clamp(0.0, 1.0);
 
         return Padding(
           padding: const EdgeInsets.only(left: 16, right: 16, bottom: 40),
@@ -58,24 +65,37 @@ class UserCollectScreen extends StatelessWidget {
                     Row(
                       children: [
                         Obx(() {
-                          final userModel = vendorProfileController.userProfileModel.value;
-                          final userGamification = gamificationController.gamificationModel.value?.data;
+                          final userModel =
+                              vendorProfileController.userProfileModel.value;
+                          final userGamification = gamificationController
+                              .gamificationModel
+                              .value
+                              ?.data;
                           final badges = userGamification?.badges ?? [];
 
                           int displayLimit = 3;
                           int totalBadges = badges.length;
-                          int displayCount = totalBadges > displayLimit ? displayLimit : totalBadges;
-                          int extraCount = totalBadges > displayLimit ? totalBadges - displayLimit : 0;
+                          int displayCount = totalBadges > displayLimit
+                              ? displayLimit
+                              : totalBadges;
+                          int extraCount = totalBadges > displayLimit
+                              ? totalBadges - displayLimit
+                              : 0;
 
                           return Stack(
                             clipBehavior: Clip.none,
                             children: [
                               CustomNetworkImage(
-                                imageUrl: (userModel.photo.isNotEmpty) ? userModel.photo : AppConstants.profileImage,
+                                imageUrl: (userModel.photo.isNotEmpty)
+                                    ? userModel.photo
+                                    : AppConstants.profileImage,
                                 height: 80,
                                 width: 80,
                                 boxShape: BoxShape.circle,
-                                border: Border.all(color: Colors.amberAccent, width: 2),
+                                border: Border.all(
+                                  color: Colors.amberAccent,
+                                  width: 2,
+                                ),
                               ),
                               Positioned(
                                 bottom: -12,
@@ -91,7 +111,10 @@ class UserCollectScreen extends StatelessWidget {
                                           child: Container(
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              border: Border.all(color: Colors.white, width: 1.5),
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 1.5,
+                                              ),
                                             ),
                                             child: CustomNetworkImage(
                                               imageUrl: badges[index].iconUrl,
@@ -112,12 +135,19 @@ class UserCollectScreen extends StatelessWidget {
                                             decoration: BoxDecoration(
                                               color: Colors.amberAccent,
                                               shape: BoxShape.circle,
-                                              border: Border.all(color: Colors.white, width: 1.5),
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 1.5,
+                                              ),
                                             ),
                                             child: Center(
                                               child: Text(
                                                 "+$extraCount",
-                                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -131,8 +161,14 @@ class UserCollectScreen extends StatelessWidget {
                         }),
                         const SizedBox(width: 16),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xff1F2937), Color(0xff4B5563)],),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xff1F2937), Color(0xff4B5563)],
+                            ),
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: CustomText(
@@ -179,14 +215,12 @@ class UserCollectScreen extends StatelessWidget {
                   minHeight: 10,
                   borderRadius: BorderRadius.circular(20),
                   backgroundColor: AppColors.greyLight,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColors.black,
-                  ),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
                 ),
                 const SizedBox(height: 10),
                 CustomText(
                   text:
-                  "XP: ${data.currentXP} / ${data.nextLevelXP} to Level ${data.currentLevel + 1}",
+                      "XP: ${data.currentXP} / ${data.nextLevelXP} to Level ${data.currentLevel + 1}",
                 ),
 
                 const SizedBox(height: 20),
@@ -206,7 +240,9 @@ class UserCollectScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 8),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(13),
                             gradient: const LinearGradient(
@@ -272,9 +308,7 @@ class UserCollectScreen extends StatelessWidget {
                       ),
                       // =========== Redeem Button ===========
                       GestureDetector(
-                        onTap: (){
-
-                        },
+                        onTap: () {},
                         child: Container(
                           width: 100,
                           height: 35,
@@ -308,7 +342,9 @@ class UserCollectScreen extends StatelessWidget {
                   child: Row(
                     children: data.achievements.map((a) {
                       return CustomHomeCard(
-                        imagesrc: a.iconUrl!.isNotEmpty ? a.iconUrl : AppIcons.starIcon,
+                        imagesrc: a.iconUrl!.isNotEmpty
+                            ? a.iconUrl
+                            : AppIcons.starIcon,
                         name: a.name,
                       );
                     }).toList(),
@@ -329,7 +365,6 @@ class UserCollectScreen extends StatelessWidget {
                     },
                   );
                 }),
-
 
                 const SizedBox(height: 20),
 
@@ -354,8 +389,7 @@ class UserCollectScreen extends StatelessWidget {
                             color: Colors.amberAccent,
                           ),
                           CustomText(
-                            text:
-                            "${data.referralCount} successful referrals",
+                            text: "${data.referralCount} successful referrals",
                             fontSize: 18,
                             color: Colors.white,
                           ),
@@ -366,15 +400,45 @@ class UserCollectScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Container(
-                        width: 100,
-                        height: 35,
-                        decoration: BoxDecoration(
-                          color: Colors.amberAccent,
-                          borderRadius: BorderRadius.circular(13),
+                      //invite btn
+                      ElevatedButton(
+                        onPressed: () {
+                          final String? code = vendorProfileController
+                              .userProfileModel
+                              .value
+                              .referralCode;
+                          debugPrint("Action: Share Clicked. Code: $code");
+                          const String playStoreLink =  "https://play.google.com/store/apps/details?id=com.izz_sports.izz_atlas_app";
+                         // const String appStoreLink =  "https://apps.apple.com/app/idYOUR_APP_ID"; 
+
+                          if (code != null && code.isNotEmpty) {
+                            final String shareMessage =
+                                "Hey! Join me on IZZ Atlas 🏆. Use my referral code: *$code* to get extra XP and rewards!\n\n"
+                                "Download now:\n"
+                                "Android: $playStoreLink\n";
+                               // "iOS: $appStoreLink";
+
+                            Share.share(shareMessage);
+                          } else {
+                            Get.snackbar(
+                              "Wait",
+                              "Referral code is loading...",
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.orange,
+                              colorText: Colors.white,
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.amberAccent,
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(13),
+                          ),
                         ),
-                        child: const Center(
-                          child: Text("Invite More"),
+                        child: const Text(
+                          "Invite More",
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

@@ -141,12 +141,8 @@ class SportsTypeController extends GetxController {
 
   final loc.Location locationController = loc.Location();
   GoogleMapController? mapController;
-
-  // বর্তমান পজিশন ও এড্রেস
   var currentPosition = Rxn<LatLng>(const LatLng(23.8103, 90.4125));
   var currentAddress = "...".obs;
-
-  // নেভিগেশন ভেরিয়েবল
   var selectedEventLocation = Rxn<LatLng>();
   var routePolylinePoints = <LatLng>[].obs;
   var remainingDistance = 0.0.obs;
@@ -213,9 +209,7 @@ class SportsTypeController extends GetxController {
   }
 
   Future<void> getDirectionsRoute(double sLat, double sLng, double eLat, double eLng) async {
-    final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/directions/json?origin=$sLat,$sLng&destination=$eLat,$eLng&mode=driving&key=$googleApiKey'
-    );
+    final url = Uri.parse('https://maps.googleapis.com/maps/api/directions/json?origin=$sLat,$sLng&destination=$eLat,$eLng&mode=driving&key=$googleApiKey');
 
     try {
       final response = await http.get(url);
