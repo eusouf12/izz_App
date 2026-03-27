@@ -103,8 +103,10 @@ class UserVenueDetailsScreen extends StatelessWidget {
                           right: 8,
                         ),
                         GestureDetector(
-                          onTap: () =>
-                              Get.toNamed(AppRoutes.userReviewScreen,  arguments: venue.id,),
+                          onTap: () {
+                              debugPrint("Send ID==============: ${venue.id}");
+                              Get.toNamed(AppRoutes.userReviewScreen, arguments: venue.id);
+                             },
                           child: CustomText(
                             text:
                             "(${venue.venueReviewCount} Review)",

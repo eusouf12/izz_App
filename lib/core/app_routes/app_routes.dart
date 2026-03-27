@@ -129,7 +129,7 @@ class AppRoutes {
     GetPage(name: forgotScreen, page: () => ForgotScreen()),
     GetPage(name: otpScreen, page: () => OtpScreen()),
     GetPage(name: setNewPassword, page: () => SetNewPassword()),
-    GetPage(name: userReviewScreen, page: () => UserReviewScreen(venueId: '',)),
+    GetPage(name: userReviewScreen, page: () => UserReviewScreen()),
     GetPage(name: chatInboxScreen, page: () => ChatInboxScreen()),
     GetPage(name: fullscreenMapScreenNonEvent, page: () => FullscreenMapScreenNonEvent()),
 

@@ -29,6 +29,7 @@ class ApiUrl {
   static String updateVenue({required String id}) => "/venues/$id";
   static String bookSlot({required String id}) => "/venue-bookings/$id";
   static String specificUserBookings({required String id}) =>"/venue-bookings/specific-user-bookings/$id";
+  static String getReviews({required String page,required String id}) => "/reviews/venue/$id?page=$page&limit=10";
   static String reviews = "/reviews/venue";
   static String gamificationProfile = "/gamification/profile";
   static String notification = "/notifications/my-notifications";
