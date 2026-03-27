@@ -118,16 +118,16 @@ class SignUpScreen extends StatelessWidget {
                                 return null;
                               },
                             ),
+                            // Referral Code (Optional)
+                            (loginRole == 'USER')?
+                              CustomFormCard(
+                              title: "Referral Code (Optional)",
+                              hintText: "Enter your referral code (optional)",
+                              controller: authController.referralController.value,
+                              )
+                              : const SizedBox.shrink(),
                             SizedBox(height: 10.h),
                             // Sign Up Button
-                            /*CustomButton(
-                              onTap: () {
-                                Get.toNamed(AppRoutes.forgotScreen);
-                              },
-                              title: "SIGN UP",
-                              fillColor: AppColors.black,
-                              textColor: AppColors.white,
-                            ),*/
                             Obx(() {
                               return authController.signUpLoading.value
                                   ? const CustomLoader()

@@ -3,15 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:izz_atlas_app/core/app_routes/app_routes.dart';
 import 'package:izz_atlas_app/utils/app_const/app_const.dart';
-import 'package:izz_atlas_app/utils/app_icons/app_icons.dart';
-import 'package:izz_atlas_app/view/components/custom_image/custom_image.dart';
 import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/components/custom_nav_bar/navbar.dart';
 import 'package:izz_atlas_app/view/components/custom_netwrok_image/custom_network_image.dart';
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_profile_screen/widgets/custom_profile_card.dart';
-
-import '../../../../helper/shared_prefe/shared_prefe.dart';
 import '../../../../utils/app_colors/app_colors.dart';
 import 'controller/user_gamification_profile_controller.dart';
 import '../../../components/custom_logout_popup/custom_logout_popup.dart';

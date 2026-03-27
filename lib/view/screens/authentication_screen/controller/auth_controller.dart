@@ -20,6 +20,7 @@ class AuthController extends GetxController {
   Rx<TextEditingController> dateOfBirthController = TextEditingController().obs;
   Rx<TextEditingController> passwordController = TextEditingController().obs;
   Rx<TextEditingController> confirmPasswordController = TextEditingController().obs;
+  Rx<TextEditingController> referralController = TextEditingController().obs;
 
   // Login Controllers
   Rx<TextEditingController> loginEmailController = TextEditingController().obs;
@@ -48,6 +49,7 @@ class AuthController extends GetxController {
       "password": passwordController.value.text,
       "email": emailController.value.text.trim().toLowerCase(),
       "role": role,
+      "referralCode": referralController.value.text.trim().isEmpty ? null : referralController.value.text.trim(),
     };
 
     try {
@@ -115,10 +117,7 @@ class AuthController extends GetxController {
         "fcmToken": deviceFcmToken ?? "",
       };
 
-      var response = await ApiClient.postData(
-        ApiUrl.signIn,
-        jsonEncode(body),
-      );
+      var response = await ApiClient.postData( ApiUrl.signIn, jsonEncode(body),  );
 
       loginLoading.value = false;
       refresh();
@@ -313,6 +312,7 @@ class AuthController extends GetxController {
     dateOfBirthController.value.clear();
     passwordController.value.clear();
     confirmPasswordController.value.clear();
+    referralController.value.clear();
   }
 }
 
