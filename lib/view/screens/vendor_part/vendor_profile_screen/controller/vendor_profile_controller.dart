@@ -37,8 +37,7 @@ class VendorProfileController extends GetxController {
   Rx<TextEditingController> countryController = TextEditingController().obs;
   Rx<TextEditingController> dobController = TextEditingController().obs;
   Rx<TextEditingController> newPasswordController = TextEditingController().obs;
-  Rx<TextEditingController> confirmPasswordController =
-      TextEditingController().obs;
+  Rx<TextEditingController> confirmPasswordController = TextEditingController().obs;
   Rx<TextEditingController> oldPasswordController = TextEditingController().obs;
 
   // Image Pickers
@@ -184,6 +183,7 @@ class VendorProfileController extends GetxController {
     dateOfBirth: '',
     photo: '',
     country: '',
+    referralCode: '',
   ).obs;
 
   Future<void> getUserProfile() async {
@@ -320,6 +320,7 @@ class UserProfileModel {
   final String? country;
   final String? address;
   final String photo;
+  final String referralCode;
 
   UserProfileModel({
     this.country,
@@ -330,6 +331,7 @@ class UserProfileModel {
     required this.contactNumber,
     this.dateOfBirth,
     required this.photo,
+    required this.referralCode,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
@@ -342,6 +344,7 @@ class UserProfileModel {
       contactNumber: json['contactNumber'] ?? '',
       dateOfBirth: json['dateOfBirth'] ?? '',
       photo: json['profileImage'] ?? '',
+      referralCode: json['referralCode'] ?? '',
     );
   }
 }
