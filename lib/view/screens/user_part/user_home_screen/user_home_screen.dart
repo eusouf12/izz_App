@@ -10,14 +10,15 @@ import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/widgets/custom_nearby_container.dart';
 import '../../../components/custom_nav_bar/navbar.dart';
 import '../../../components/custom_text/custom_text.dart';
-import '../../../components/custom_text_field/custom_text_field.dart';
 import '../../vendor_part/vendor_profile_screen/controller/vendor_profile_controller.dart';
 
 class UserHomeScreen extends StatelessWidget {
   UserHomeScreen({super.key});
 
   final SportsTypeController sportsController = Get.put(SportsTypeController());
-  final VendorProfileController vendorProfileController = Get.put(VendorProfileController(),);
+  final VendorProfileController vendorProfileController = Get.put(
+    VendorProfileController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +59,8 @@ class UserHomeScreen extends StatelessWidget {
                 children: [
                   //name
                   Obx(() {
-                    final name = vendorProfileController.userProfileModel.value.fullName;
+                    final name =
+                        vendorProfileController.userProfileModel.value.fullName;
                     return CustomText(
                       text: "HI $name!",
                       fontSize: 18,
@@ -79,19 +81,25 @@ class UserHomeScreen extends StatelessWidget {
                   Obx(() {
                     // final sportsController = Get.find<SportsTypeController>();
 
-                    final displayList = sportsController.sportsList.toList()..sort((a, b) {
-                        if (a.updatedAt == null || b.updatedAt == null) return 0;
+                    final displayList = sportsController.sportsList.toList()
+                      ..sort((a, b) {
+                        if (a.updatedAt == null || b.updatedAt == null)
+                          return 0;
                         return b.updatedAt!.compareTo(a.updatedAt!);
                       });
 
                     final trendingList = displayList.take(3).toList();
 
                     if (sportsController.isSportsLoading.value) {
-                      return SizedBox(height: 220.h, child: const Center(child: CustomLoader()));
+                      return SizedBox(
+                        height: 220.h,
+                        child: const Center(child: CustomLoader()),
+                      );
                     }
                     if (trendingList.isEmpty) return const SizedBox.shrink();
 
-                    return SizedBox(height: 220.h,
+                    return SizedBox(
+                      height: 220.h,
                       child: PageView.builder(
                         itemCount: trendingList.length,
                         controller: PageController(viewportFraction: 0.95),
@@ -103,7 +111,10 @@ class UserHomeScreen extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 8),
                             child: GestureDetector(
                               onTap: () {
-                                Get.toNamed(AppRoutes.userSearchVenueScreen, arguments: sportData.sportName,);
+                                Get.toNamed(
+                                  AppRoutes.userSearchVenueScreen,
+                                  arguments: sportData.sportName,
+                                );
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(13),
@@ -111,7 +122,9 @@ class UserHomeScreen extends StatelessWidget {
                                   children: [
                                     /// Background Image
                                     CustomNetworkImage(
-                                      imageUrl: sportData.sportsImage ?? AppConstants.sports,
+                                      imageUrl:
+                                          sportData.sportsImage ??
+                                          AppConstants.sports,
                                       height: 220.h,
                                       width: double.infinity,
                                       borderRadius: BorderRadius.circular(13),
@@ -123,13 +136,18 @@ class UserHomeScreen extends StatelessWidget {
                                         gradient: LinearGradient(
                                           begin: Alignment.topCenter,
                                           end: Alignment.bottomCenter,
-                                          colors: [Colors.transparent, Colors.black.withOpacity(0.7),],
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.black.withOpacity(0.7),
+                                          ],
                                         ),
                                       ),
                                     ),
 
                                     /// Badge
-                                    Positioned(left: 15, top: 15,
+                                    Positioned(
+                                      left: 15,
+                                      top: 15,
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 12,
@@ -205,7 +223,7 @@ class UserHomeScreen extends StatelessWidget {
 
                   SizedBox(height: 16),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       Get.toNamed(AppRoutes.fullscreenMapScreenNonEvent);
                     },
                     child: CustomNearbyContainer(

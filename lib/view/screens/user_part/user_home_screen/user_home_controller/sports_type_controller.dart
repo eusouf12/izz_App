@@ -12,7 +12,6 @@ import '../../../../../service/api_client.dart';
 import '../../../../../service/api_url.dart';
 import '../../../../../utils/ToastMsg/toast_message.dart';
 import '../model/all_sports_model.dart';
-import '../model/all_sports_model.dart';
 import '../model/map_model.dart' as map_mod;
 import '../model/sports_type_model.dart';
 

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:izz_atlas_app/view/components/custom_button/custom_button.dart';
-import 'package:izz_atlas_app/view/components/custom_button/custom_button_two.dart';
 import 'package:izz_atlas_app/view/components/custom_royel_appbar/custom_royel_appbar.dart';
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
 import '../../../../utils/app_colors/app_colors.dart';

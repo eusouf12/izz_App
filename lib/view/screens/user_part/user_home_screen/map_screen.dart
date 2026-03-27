@@ -7,11 +7,10 @@ import '../../../components/custom_loader/custom_loader.dart';
 import '../../../components/custom_text/custom_text.dart';
 import 'user_home_controller/sports_type_controller.dart';
 
-
-
 class FullscreenMapScreenNonEvent extends StatelessWidget {
   FullscreenMapScreenNonEvent({super.key});
-  final SportsTypeController sportsController = Get.find<SportsTypeController>();
+  final SportsTypeController sportsController =
+      Get.find<SportsTypeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +43,8 @@ class FullscreenMapScreenNonEvent extends StatelessWidget {
         }
 
         for (var venue in venueList) {
-          final double lat = venue.latitude ?? 0.0;
-          final double lon = venue.longitude ?? 0.0;
+          final double lat = venue.latitude;
+          final double lon = venue.longitude;
 
           double distanceInMeters = Geolocator.distanceBetween(
             sportsController.currentPosition.value!.latitude,
@@ -55,7 +54,8 @@ class FullscreenMapScreenNonEvent extends StatelessWidget {
           );
           double distanceInKm = distanceInMeters / 1000;
 
-          bool isDestination = sportsController.isNavigating.value &&
+          bool isDestination =
+              sportsController.isNavigating.value &&
               sportsController.selectedEventLocation.value?.latitude == lat &&
               sportsController.selectedEventLocation.value?.longitude == lon;
 
@@ -64,16 +64,20 @@ class FullscreenMapScreenNonEvent extends StatelessWidget {
               markerId: MarkerId("${venue.id}"),
               position: LatLng(lat, lon),
               icon: BitmapDescriptor.defaultMarkerWithHue(
-                isDestination ? BitmapDescriptor.hueRed : BitmapDescriptor.hueGreen,
+                isDestination
+                    ? BitmapDescriptor.hueRed
+                    : BitmapDescriptor.hueGreen,
               ),
               onTap: () {
                 Get.defaultDialog(
-                  title: venue.venueName ?? "Venue Details",
+                  title: venue.venueName,
                   content: Column(
                     children: [
-                      CustomText(text: "Type: ${venue.sportsType ?? 'N/A'}"),
+                      CustomText(text: "Type: ${venue.sportsType}"),
                       CustomText(text: "Price: \$${venue.pricePerHour}/hr"),
-                      CustomText(text: "Distance: ${distanceInKm.toStringAsFixed(2)} km"),
+                      CustomText(
+                        text: "Distance: ${distanceInKm.toStringAsFixed(2)} km",
+                      ),
                     ],
                   ),
                   textConfirm: "Navigate",
@@ -94,7 +98,8 @@ class FullscreenMapScreenNonEvent extends StatelessWidget {
           children: [
             // ৫. গুগল ম্যাপ
             GoogleMap(
-              onMapCreated: (controller) => sportsController.mapController = controller,
+              onMapCreated: (controller) =>
+                  sportsController.mapController = controller,
               initialCameraPosition: CameraPosition(
                 target: sportsController.currentPosition.value!,
                 zoom: 12,
@@ -132,18 +137,28 @@ class FullscreenMapScreenNonEvent extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black12, blurRadius: 10),
+                    ],
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.directions_car, color: Colors.blue, size: 30),
+                      const Icon(
+                        Icons.directions_car,
+                        color: Colors.blue,
+                        size: 30,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const CustomText(text: "Distance to Venue", fontSize: 10, color: Colors.grey),
+                            const CustomText(
+                              text: "Distance to Venue",
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
                             CustomText(
                               text: sportsController.remainingDistance.value < 1
                                   ? "${(sportsController.remainingDistance.value * 1000).toStringAsFixed(0)} m"
@@ -158,7 +173,7 @@ class FullscreenMapScreenNonEvent extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.cancel, color: Colors.red),
                         onPressed: () => sportsController.stopNavigation(),
-                      )
+                      ),
                     ],
                   ),
                 ),

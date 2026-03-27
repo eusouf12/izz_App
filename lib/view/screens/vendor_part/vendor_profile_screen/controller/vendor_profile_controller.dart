@@ -187,7 +187,7 @@ class VendorProfileController extends GetxController {
   ).obs;
 
   Future<void> getUserProfile() async {
-    final userId = await SharePrefsHelper.getString(AppConstants.userId);
+   // final userId = await SharePrefsHelper.getString(AppConstants.userId);
 
     var response = await ApiClient.getData(ApiUrl.vendorProfile);
 

@@ -68,8 +68,7 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
               /// Welcome
               Obx(() {
                 final name = vendorProfileController
-                    .userProfileModel.value.fullName ??
-                    "";
+                    .userProfileModel.value.fullName ;
                 return CustomText(
                   text: "Welcome Back, $name",
                   fontSize: 16,

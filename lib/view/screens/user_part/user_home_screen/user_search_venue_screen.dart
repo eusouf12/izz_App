@@ -9,10 +9,8 @@ import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_fuilter_screen.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_controller/user_all_sports_controller.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/widgets/custom_results_venue_container.dart';
-
 import '../../../../utils/app_colors/app_colors.dart';
 import '../../../components/custom_text_field/custom_text_field.dart';
-import 'model/all_sports_model.dart';
 
 class UserSearchVenueScreen extends StatelessWidget {
   UserSearchVenueScreen({super.key});

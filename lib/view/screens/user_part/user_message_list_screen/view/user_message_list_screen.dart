@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:izz_atlas_app/utils/app_colors/app_colors.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_message_list_screen/widgets/custom_messages_list_card.dart';
-import '../../../../../../core/app_routes/app_routes.dart';import '../../../../../service/api_url.dart';
+import '../../../../../../core/app_routes/app_routes.dart';
 import '../../../../components/custom_loader/custom_loader.dart';
 import '../../../../components/custom_royel_appbar/custom_royel_appbar.dart';
 import '../../../../components/custom_text/custom_text.dart';

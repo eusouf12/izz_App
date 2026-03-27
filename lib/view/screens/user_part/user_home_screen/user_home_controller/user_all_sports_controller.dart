@@ -75,7 +75,7 @@ class UserAllSportsController extends GetxController{
         final venueResponse = VenueResponse.fromJson(jsonResponse);
 
         final meta = venueResponse.data.meta;
-        totalPage.value = (meta.total / (meta.limit ?? 10)).ceil();
+        totalPage.value = (meta.total / (meta.limit )).ceil();
         currentPage.value = sportsCurrentPage;
 
         final newGroups = venueResponse.data.data;

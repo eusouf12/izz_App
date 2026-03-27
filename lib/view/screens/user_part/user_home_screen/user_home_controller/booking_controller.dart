@@ -78,7 +78,7 @@ class BookingController extends GetxController {
     if (detailsController.venueDetails.value == null) return;
 
 
-    String dayName = DateFormat('EEEE').format(selectedDate.value);
+    DateFormat('EEEE').format(selectedDate.value);
 
     // var availability = detailsController.venueDetails.value!.venueAvailabilities...
     // if (availability.bookedCourts.contains(court)) { bookedCourts.add(court); }

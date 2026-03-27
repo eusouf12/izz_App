@@ -101,7 +101,7 @@ class UserHowItWorkScreen extends StatelessWidget {
                   children: List.generate(levels.length, (index) {
                     final data = levels[index];
                     bool isCurrent = (currentLevel == data.level);
-                    bool isUnlocked = (currentLevel ?? 0) >= (data.level ?? 0);
+                    bool isUnlocked = (currentLevel) >= (data.level ?? 0);
 
                     return IntrinsicHeight(
                       child: Row(
