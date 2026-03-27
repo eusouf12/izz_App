@@ -27,7 +27,11 @@ class LoginScreen extends StatelessWidget {
               height: MediaQuery.sizeOf(context).height,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.black, Color(0xff111827), Color(0xff1F2937)],
+                  colors: [
+                    AppColors.black,
+                    Color(0xff111827),
+                    Color(0xff1F2937),
+                  ],
                 ),
               ),
             ),
@@ -73,7 +77,8 @@ class LoginScreen extends StatelessWidget {
                               title: "EMAIL",
                               hintText: "Enter your email",
                               // Controller connect kora holo
-                              controller: authController.loginEmailController.value,
+                              controller:
+                                  authController.loginEmailController.value,
                               // Validation add kora holo
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -89,7 +94,8 @@ class LoginScreen extends StatelessWidget {
                               hintText: "Enter your password",
                               isPassword: true,
                               // Controller connect kora holo
-                              controller: authController.loginPasswordController.value,
+                              controller:
+                                  authController.loginPasswordController.value,
                               // Validation
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -104,45 +110,48 @@ class LoginScreen extends StatelessWidget {
                             // Login Button with Obx for Loading state
                             Obx(() {
                               return authController.loginLoading.value
-                                  ? const Center(child: CustomLoader()) // Or use CustomLoader()
+                                  ? const Center(
+                                      child: CustomLoader(),
+                                    ) // Or use CustomLoader()
                                   : CustomButton(
-                                onTap: () {
-                                  // Form validation check
-                                  if (formKey.currentState!.validate()) {
-                                    authController.loginUser();
-                                  }
-                                },
-                                title: "LOG IN",
-                                fillColor: AppColors.black,
-                                textColor: AppColors.white,
-                              );
+                                      onTap: () {
+                                        // Form validation check
+                                        if (formKey.currentState!.validate()) {
+                                          authController.loginUser();
+                                        }
+                                      },
+                                      title: "LOG IN",
+                                      fillColor: AppColors.black,
+                                      textColor: AppColors.white,
+                                    );
                             }),
+                            SizedBox(height: 20.h),
 
-                            CustomText(
-                              top: 20,
-                              text: "CONTINUE WITH",
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.black.withOpacity(0.3), // .withValues replacement
-                              bottom: 10.h,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CustomImage(
-                                  imageSrc: AppIcons.google,
-                                  height: 40,
-                                  width: 40,
-                                ),
-                                SizedBox(width: 26),
-                                // CustomImage(
-                                //   imageSrc: AppIcons.apple,
-                                //   imageColor: AppColors.black,
-                                //   height: 65,
-                                //   width: 65,
-                                // ),
-                              ],
-                            ),
+                            // CustomText(
+                            //   top: 20,
+                            //   text: "CONTINUE WITH",
+                            //   fontSize: 14,
+                            //   fontWeight: FontWeight.w400,
+                            //   color: AppColors.black.withOpacity(0.3), // .withValues replacement
+                            //   bottom: 10.h,
+                            // ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children: [
+                            //     CustomImage(
+                            //       imageSrc: AppIcons.google,
+                            //       height: 40,
+                            //       width: 40,
+                            //     ),
+                            //     SizedBox(width: 26),
+                            //     // CustomImage(
+                            //     //   imageSrc: AppIcons.apple,
+                            //     //   imageColor: AppColors.black,
+                            //     //   height: 65,
+                            //     //   width: 65,
+                            //     // ),
+                            //   ],
+                            // ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -150,7 +159,7 @@ class LoginScreen extends StatelessWidget {
                                   text: "Didn't have an account yet?",
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.black12,
+                                  color: const Color.fromARGB(124, 0, 0, 0),
                                   bottom: 10.h,
                                 ),
                                 GestureDetector(
