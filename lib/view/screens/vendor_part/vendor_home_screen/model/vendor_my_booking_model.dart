@@ -150,6 +150,8 @@ class Venue {
   String? location;
   String? venueImage;
   int? pricePerHour;
+  int? venueReviewCount;
+  String? venueRating;
 
   Venue({
     this.id,
@@ -158,6 +160,8 @@ class Venue {
     this.location,
     this.venueImage,
     this.pricePerHour,
+    this.venueReviewCount,
+    this.venueRating,
   });
 
   factory Venue.fromJson(Map<String, dynamic> json) {
@@ -168,6 +172,8 @@ class Venue {
       location: json['location'],
       venueImage: json['venueImage'],
       pricePerHour: json['pricePerHour'],
+      venueReviewCount: json['venueReviewCount'],
+      venueRating: json['venueRating'],
     );
   }
 }

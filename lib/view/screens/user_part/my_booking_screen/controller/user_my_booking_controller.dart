@@ -46,9 +46,7 @@ class UserMyBookingController extends GetxController {
   Future<void> fetchBookings(String status) async {
     if (currentPage > totalPages) return;
 
-    currentPage == 1
-        ? isLoading.value = true
-        : isMoreLoading.value = true;
+    currentPage == 1 ? isLoading.value = true: isMoreLoading.value = true;
 
     try {
       final response = await ApiClient.getData(
@@ -82,13 +80,13 @@ class UserMyBookingController extends GetxController {
   String _mapStatus(String uiStatus) {
     switch (uiStatus) {
       case "Requested":
-        return "new_request";
+        return "new-requests";
       case "Ongoing":
         return "ongoing";
       case "Completed":
         return "completed";
       default:
-        return "new_request";
+        return "new-requests";
     }
   }
 }

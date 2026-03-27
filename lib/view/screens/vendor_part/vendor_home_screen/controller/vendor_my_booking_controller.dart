@@ -1,6 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-
 import '../../../../../service/api_client.dart';
 import '../../../../../service/api_url.dart';
 import '../model/vendor_my_booking_model.dart';
@@ -37,8 +36,6 @@ class VendorMyBookingController extends GetxController {
     currentPage = 1;
     totalPages = 1;
     bookings.clear();
-
-    /// 🔥 FIX: map UI tab → backend status
     await fetchBookings(_mapStatus(status));
   }
 
@@ -54,8 +51,7 @@ class VendorMyBookingController extends GetxController {
       final response = await ApiClient.getData(ApiUrl.vendorBookingsByStatus(status: status),);
 
       if (response.statusCode == 200 && response.body != null) {
-        final bookingResponse =
-        MyVenueBookingResponseModel.fromJson(response.body);
+        final bookingResponse = MyVenueBookingResponseModel.fromJson(response.body);
 
         if (bookingResponse.data != null) {
           bookings.addAll(bookingResponse.data!);
@@ -63,8 +59,7 @@ class VendorMyBookingController extends GetxController {
 
         totalBookings.value = bookingResponse.meta?.total ?? 0;
         final limit = bookingResponse.meta?.limit ?? 10;
-        totalPages =
-            ((bookingResponse.meta?.total ?? 0) / limit).ceil();
+        totalPages = ((bookingResponse.meta?.total ?? 0) / limit).ceil();
 
         currentPage++;
       }
@@ -76,17 +71,52 @@ class VendorMyBookingController extends GetxController {
     }
   }
 
-  /// ✅ ONLY NEW METHOD
+  /// ONLY NEW METHOD
   String _mapStatus(String uiStatus) {
     switch (uiStatus) {
       case "Requested":
-        return "new_request";
+        return "new-request";
       case "Ongoing":
         return "ongoing";
       case "Completed":
         return "completed";
       default:
-        return "new_request";
+        return "new-request";
     }
   }
+
+  /// ======================== Accept Booking ========================
+  Future<void> acceptBooking(String bookingId) async {
+    try {
+      final response = await ApiClient.postData(ApiUrl.acceptBooking(id: bookingId),null);
+
+      if (response.statusCode == 200 && response.body != null) {
+        Get.back();
+        fetchInitialBookings(tabNameList[currentIndex.value]);
+      }
+    } catch (e) {
+      debugPrint("Vendor booking error: $e");
+    } finally {
+      isLoading.value = false;
+      isMoreLoading.value = false;
+    }
+  }
+
+  /// ======================== Reject Booking ========================
+  Future<void> rejectBooking(String bookingId) async {
+    try {
+      final response = await ApiClient.postData(ApiUrl.rejectBooking(id: bookingId),null);
+
+      if (response.statusCode == 200 && response.body != null) {
+        Get.back();
+        fetchInitialBookings(tabNameList[currentIndex.value]);
+      }
+    } catch (e) {
+      debugPrint("Vendor booking error: $e");
+    } finally {
+      isLoading.value = false;
+      isMoreLoading.value = false;
+    }
+  }
+
 }

@@ -18,10 +18,7 @@ class VendorMyVenuesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: CustomRoyelAppbar(
-        leftIcon: true,
-        titleName: "Venue",
-      ),
+      appBar: CustomRoyelAppbar(leftIcon: true, titleName: "Venues"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
@@ -33,7 +30,7 @@ class VendorMyVenuesScreen extends StatelessWidget {
                   flex: 2,
                   child: CustomText(
                     text: "My Venues",
-                    fontSize: 36,
+                    fontSize: 24,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -46,7 +43,7 @@ class VendorMyVenuesScreen extends StatelessWidget {
                     height: 40,
                     fontSize: 14,
                     textColor: AppColors.white,
-                    title: "+  ADD New",
+                    title: "+  ADD NEW",
                   ),
                 ),
               ],
@@ -82,15 +79,24 @@ class VendorMyVenuesScreen extends StatelessWidget {
                         buttonText: venue.venueStatus ? "Active" : "Inactive",
 
                         onTapEdit: () {
-                          Get.toNamed(AppRoutes.editVenueScreen, arguments: venue.id);
+                          Get.toNamed(
+                            AppRoutes.editVenueScreen,
+                            arguments: venue.id,
+                          );
                         },
 
                         onTapAvailability: () {
-                          Get.toNamed(AppRoutes.venueAvailabilityScreen, arguments: venue.id);
+                          Get.toNamed(
+                            AppRoutes.venueAvailabilityScreen,
+                            arguments: venue.id,
+                          );
                         },
 
                         onTapDetails: () {
-                          Get.toNamed(AppRoutes.venueDetailsScreen, arguments: venue.id);
+                          Get.toNamed(
+                            AppRoutes.venueDetailsScreen,
+                            arguments: venue.id,
+                          );
                         },
                       ),
                     );
