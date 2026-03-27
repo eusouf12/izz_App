@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,6 +35,12 @@ class AddVenueController extends GetxController {
 
   // Sports list (populated from API)
   RxList<String> sportsTypeList = <String>[].obs;
+  // Location suggestion list (for autocomplete)
+  RxList<Map<String, dynamic>> locationSuggestions = <Map<String, dynamic>>[].obs;
+  // Selected coordinates
+  var selectedLatitude = 0.0.obs;
+  var selectedLongitude = 0.0.obs;
+  Timer? _locationDebounce;
   late final SportsTypeController sportsTypeController;
 
   // Schedule logic
@@ -65,6 +73,59 @@ class AddVenueController extends GetxController {
     if (sportsTypeController.sportsList.isEmpty) {
       sportsTypeController.getAllSports();
     }
+  }
+
+  @override
+  void onClose() {
+    _locationDebounce?.cancel();
+    super.onClose();
+  }
+
+  // Search locations using Nominatim (OpenStreetMap) with a short debounce
+  void searchLocations(String query) {
+    // Cancel previous debounce timer
+    if (_locationDebounce?.isActive ?? false) _locationDebounce!.cancel();
+
+    _locationDebounce = Timer(const Duration(milliseconds: 300), () async {
+      final q = query.trim();
+      if (q.isEmpty) {
+        locationSuggestions.clear();
+        return;
+      }
+
+      try {
+        final url = Uri.parse('https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(q)}&format=json&addressdetails=1&limit=6&accept-language=en');
+        final resp = await http.get(url, headers: {
+          'User-Agent': 'izz_atlas_app',
+          'Accept-Language': 'en'
+        });
+        if (resp.statusCode == 200) {
+          final List data = jsonDecode(resp.body) as List;
+          final suggestions = data.map<Map<String, dynamic>>((e) {
+            final display = (e['display_name'] ?? '') as String;
+            return {
+              'name': display.split(',').first,
+              'address': display,
+              'lat': double.tryParse((e['lat'] ?? '0').toString()) ?? 0.0,
+              'lon': double.tryParse((e['lon'] ?? '0').toString()) ?? 0.0,
+            };
+          }).toList();
+          locationSuggestions.assignAll(suggestions);
+        } else {
+          locationSuggestions.clear();
+        }
+      } catch (e) {
+        locationSuggestions.clear();
+      }
+    });
+  }
+
+  // When user taps a suggestion
+  void selectLocation(Map<String, dynamic> suggestion) {
+    locationController.text = suggestion['address'] ?? '';
+    selectedLatitude.value = suggestion['lat'] ?? 0.0;
+    selectedLongitude.value = suggestion['lon'] ?? 0.0;
+    locationSuggestions.clear();
   }
 
   // Methods for picking image
@@ -284,6 +345,8 @@ class AddVenueController extends GetxController {
         "courtNumbers": int.tryParse(courtNumberController.text.trim()) ?? 1,
         "venueStatus": isVenueActive.value,
         "venueAvailabilities": venueAvailabilities,
+        "latitude": selectedLatitude.value,
+        "longitude": selectedLongitude.value,
       };
 
       Map<String, String> body = {
@@ -304,6 +367,7 @@ class AddVenueController extends GetxController {
       isLoading.value = false;
       if (response.statusCode == 200 || response.statusCode == 201) {
         _clearFields();
+        Get.back();
         Get.snackbar(
           "Success",
           "Venue Created Successfully!",

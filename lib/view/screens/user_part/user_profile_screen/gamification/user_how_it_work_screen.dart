@@ -7,16 +7,19 @@ import 'package:izz_atlas_app/view/components/custom_royel_appbar/custom_royel_a
 import 'package:izz_atlas_app/view/components/custom_text/custom_text.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_profile_screen/widgets/custom_rules_card.dart';
 import 'package:get/get.dart';
+import '../../../vendor_part/vendor_profile_screen/controller/vendor_profile_controller.dart' show VendorProfileController;
 import '../controller/user_gamification_profile_controller.dart';
 
 class UserHowItWorkScreen extends StatelessWidget {
    UserHowItWorkScreen({super.key});
+   final VendorProfileController vendorProfileController = Get.put(VendorProfileController());
    final UserGamificationController gamificationController = Get.put(UserGamificationController());
 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       gamificationController.getLevels();
+      vendorProfileController.getUserProfile();
       gamificationController.fetchGamificationProfile();
     });
     return Scaffold(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:izz_atlas_app/view/components/custom_button/custom_button.dart';
 import 'package:izz_atlas_app/view/components/custom_from_card/custom_from_card.dart';
@@ -29,6 +30,7 @@ class AddVenueScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    //img
                     GestureDetector(
                       onTap: controller.pickImage,
                       child: Container(
@@ -133,11 +135,52 @@ class AddVenueScreen extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       controller: controller.courtNumberController,
                     ),
-                    CustomFormCard(
-                      title: "Location",
-                      hintText: "Dhanmondi, Dhaka",
-                      controller: controller.locationController,
+                   //Location
+                    CustomText(
+                      text: "Location",
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      bottom: 8,
                     ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextField(
+                        controller: controller.locationController,
+                        onChanged: (value) => controller.searchLocations(value),
+                        decoration: InputDecoration(
+                          hintText: "Dhanmondi, Dhaka",
+                          border: InputBorder.none,
+                          suffixIcon: const Icon(Icons.location_on),
+                        ),
+                      ),
+                    ),
+                    Obx(() {
+                      if (controller.locationSuggestions.isEmpty) return const SizedBox.shrink();
+                      return Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: controller.locationSuggestions.length,
+                          itemBuilder: (context, index) {
+                            var suggestion = controller.locationSuggestions[index];
+                            return ListTile(
+                              title: Text(suggestion['name'] ?? ''),
+                              subtitle: Text(suggestion['address'] ?? ''),
+                              onTap: () => controller.selectLocation(suggestion),
+                            );
+                          },
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 16),
                     const SizedBox(height: 16),
 
                     // Schedule section title
@@ -472,28 +515,46 @@ class AddVenueScreen extends StatelessWidget {
                     // Buttons row: Cancel and Save
                     Row(
                       children: [
-                        Flexible(
-                          child: CustomButton(
-                            onTap: () => Get.back(),
-                            fillColor: AppColors.black_05,
-                            textColor: AppColors.white,
-                            title: "Cancel",
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Obx(() {
-                            return controller.isLoading.value
-                                ? const Center(child: CustomLoader())
-                                : CustomButton(
-                              onTap: () {
-                                controller.createVenue();
+                      Flexible(
+                        child: CustomButton(
+                          onTap: () {
+                                // Log current form values (use controller fields)
+                                debugPrint('Venue Name: ${controller.venueNameController.text.trim()}');
+                                debugPrint('Sports Type: ${controller.selectedSportType.value}');
+                                debugPrint('Price Per Hour: ${int.tryParse(controller.priceController.text.trim()) ?? 0}');
+                                debugPrint('Capacity: ${int.tryParse(controller.capacityController.text.trim()) ?? 0}');
+                                debugPrint('Location: ${controller.locationController.text.trim()}');
+                                debugPrint('Description: ${controller.descriptionController.text.trim()}');
+                                debugPrint('Amenities: ${controller.selectedAmenities.map((e) => {"amenityName": e}).toList()}');
+                                debugPrint('Court Numbers: ${int.tryParse(controller.courtNumberController.text.trim()) ?? 1}');
+                                debugPrint('Venue Status: ${controller.isVenueActive.value}');
+                                // Use controller.scheduleList for current availabilities when debugging
+                                debugPrint('Venue Availabilities: ${controller.scheduleList}');
+                                debugPrint('Latitude: ${controller.selectedLatitude.value}');
+                                debugPrint('Longitude: ${controller.selectedLongitude.value}');
+                                // Cancel should go back instead of creating the venue
+                                Get.back();
                               },
-                              textColor: AppColors.white,
-                              title: "Save",
-                            );
-                          }),
+                        fillColor: AppColors.black_05,
+                        textColor: AppColors.white,
+                        title: "Cancel",
                         ),
+                      ),
+                      const SizedBox(width: 8),
+                      //create btn
+                      Flexible(
+                        child: Obx(() {
+                        return controller.isLoading.value
+                          ? const Center(child: CustomLoader())
+                          : CustomButton(
+                          onTap: () {
+                          controller.createVenue();
+                          },
+                          textColor: AppColors.white,
+                          title: "Save",
+                        );
+                        }),
+                      ),
                       ],
                     ),
                     const SizedBox(height: 50),
