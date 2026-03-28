@@ -1,7 +1,7 @@
 class ApiUrl {
   /// ================= BASE URL =================
   //static const String baseUrl = "https://sports-izz-122-backend.onrender.com/api/v1";
-  static const String baseUrl ="https://spokesman-christopher-heading-ultimately.trycloudflare.com/api/v1";
+  static const String baseUrl ="https://plains-quest-biggest-qld.trycloudflare.com/api/v1";
   static const String websocket = "https://sports-izz-122-backend.onrender.com";
 
   static String mapKey = "AIzaSyBuSZJklSc1j0D4kqhkJcmyArcZbWujbXQ";

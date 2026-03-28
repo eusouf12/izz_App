@@ -45,9 +45,9 @@ class Meta {
 
   factory Meta.fromJson(Map<String, dynamic> json) {
     return Meta(
-      total: json['total'],
-      page: json['page'],
-      limit: json['limit'],
+      total: json['total']?.toInt(),
+      page: json['page']?.toInt(),
+      limit: json['limit']?.toInt(),
     );
   }
 }
@@ -111,8 +111,8 @@ class Venue {
       id: json['id'],
       venueName: json['venueName'],
       sportsType: json['sportsType'],
-      pricePerHour: json['pricePerHour'],
-      capacity: json['capacity'],
+      pricePerHour: json['pricePerHour']?.toInt(),
+      capacity: json['capacity']?.toInt(),
       location: json['location'],
       latitude: (json['latitude'] ?? 0).toDouble(),
       longitude: (json['longitude'] ?? 0).toDouble(),
@@ -124,11 +124,11 @@ class Venue {
           json['amenities'].map((x) => Amenity.fromJson(x)))
           : [],
       courtNumbers: json['courtNumbers'] != null
-          ? List<int>.from(json['courtNumbers'])
+          ? (json['courtNumbers'] as List).map((e) => (e as num).toInt()).toList()
           : [],
       everyServiceStatus: json['EveryServiceStatus'],
       venueRating: json['venueRating'],
-      venueReviewCount: json['venueReviewCount'],
+      venueReviewCount: json['venueReviewCount']?.toInt(),
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       vendorId: json['vendorId'],

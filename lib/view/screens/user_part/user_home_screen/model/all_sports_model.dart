@@ -52,9 +52,9 @@ class Meta {
 
   factory Meta.fromJson(Map<String, dynamic> json) {
     return Meta(
-      total: json['total'],
-      page: json['page'],
-      limit: json['limit'],
+      total: json['total']?.toInt(),
+      page: json['page']?.toInt(),
+      limit: json['limit']?.toInt(),
     );
   }
 }
@@ -79,7 +79,7 @@ class SportsVenueGroup {
       venues: (json['venues'] as List)
           .map((e) => Venue.fromJson(e))
           .toList(),
-      count: json['count'],
+      count: json['count']?.toInt(),
     );
   }
 }
@@ -148,7 +148,7 @@ class Venue {
       longitude: (json['longitude'] ?? 0.0).toDouble(),
       distance: (json['distance'] ?? 0.0).toDouble(),
       amenities: json['amenities'] != null ? (json['amenities'] as List).map((e) => Amenity.fromJson(e)).toList() : [],
-      courtNumbers: json['courtNumbers'] != null ? List<int>.from(json['courtNumbers']) : [],
+      courtNumbers: json['courtNumbers'] != null ? (json['courtNumbers'] as List).map((e) => (e as num).toInt()).toList() : [],
       everyServiceStatus: json['EveryServiceStatus'] ?? '',
       venueRating: json['venueRating']?.toString() ?? '0',
       venueReviewCount: (json['venueReviewCount'] ?? 0).toInt(),
@@ -275,7 +275,7 @@ class Review {
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
       id: json['id'],
-      rating: json['rating'],
+      rating: json['rating']?.toInt(),
       subRatings: json['subRatings'],
       comment: json['comment'],
       createdAt: json['createdAt'],
