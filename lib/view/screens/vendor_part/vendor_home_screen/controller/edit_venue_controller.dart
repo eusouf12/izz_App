@@ -35,7 +35,15 @@ class EditVenueController extends GetxController {
   late final SportsTypeController sportsTypeController;
   var selectedSportType = ''.obs;
 
-  final daysList = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  final daysList = [
+    "SUNDAY",
+    "MONDAY",
+    "TUESDAY",
+    "WEDNESDAY",
+    "THURSDAY",
+    "FRIDAY",
+    "SATURDAY",
+  ];
 
   var amenitiesList = [].obs;
   var selectedAmenities = <String>[].obs;
@@ -105,7 +113,7 @@ class EditVenueController extends GetxController {
         selectedAmenities.clear();
         for (var element in venue.amenities) {
           selectedAmenities.add(element.amenityName);
-          if(!amenitiesList.contains(element.amenityName)){
+          if (!amenitiesList.contains(element.amenityName)) {
             amenitiesList.add(element.amenityName);
           }
         }
@@ -114,28 +122,23 @@ class EditVenueController extends GetxController {
         for (var availability in venue.venueAvailabilities) {
           List<Map<String, String>> slots = [];
           for (var slot in availability.scheduleSlots) {
-            slots.add({
-              "start": slot.from,
-              "end": slot.to
-            });
+            slots.add({"start": slot.from, "end": slot.to});
           }
 
           String apiDay = availability.day.toUpperCase();
-          if(!daysList.contains(apiDay)){
-            apiDay = daysList.firstWhere((d) => d.toUpperCase() == apiDay, orElse: () => "SUNDAY");
+          if (!daysList.contains(apiDay)) {
+            apiDay = daysList.firstWhere(
+              (d) => d.toUpperCase() == apiDay,
+              orElse: () => "SUNDAY",
+            );
           }
 
-          scheduleList.add({
-            "day": apiDay,
-            "isActive": true,
-            "slots": slots
-          });
+          scheduleList.add({"day": apiDay, "isActive": true, "slots": slots});
         }
 
         if (scheduleList.isEmpty) {
           addNewDayBlock();
         }
-
       } else {
         ApiChecker.checkApi(response);
       }
@@ -176,7 +179,10 @@ class EditVenueController extends GetxController {
           int endA = _timeToMinutes(slots[i]['end']);
 
           if (startA >= endA) {
-            showCustomSnackBar("$dayName: Start time cannot be greater or equal to End time.", isError: true);
+            showCustomSnackBar(
+              "$dayName: Start time cannot be greater or equal to End time.",
+              isError: true,
+            );
             return false;
           }
 
@@ -186,8 +192,9 @@ class EditVenueController extends GetxController {
 
             if (startA < endB && endA > startB) {
               showCustomSnackBar(
-                  "Time conflict detected on $dayName.\n(${slots[i]['start']}-${slots[i]['end']}) overlaps with (${slots[j]['start']}-${slots[j]['end']})",
-                  isError: true);
+                "Time conflict detected on $dayName.\n(${slots[i]['start']}-${slots[i]['end']}) overlaps with (${slots[j]['start']}-${slots[j]['end']})",
+                isError: true,
+              );
               return false;
             }
           }
@@ -197,6 +204,7 @@ class EditVenueController extends GetxController {
     return true;
   }
 
+  // ===================== update =========================================
   Future<void> updateVenue() async {
     isUpdating.value = true;
 
@@ -242,12 +250,10 @@ class EditVenueController extends GetxController {
         "description": descriptionController.text,
       };
 
-      // 1. Map Amenities using index notation
       for (int i = 0; i < selectedAmenities.length; i++) {
         fields["amenities[$i][amenityName]"] = selectedAmenities[i];
       }
 
-      // 2. Map venueAvailabilities and nested scheduleSlots using index notation
       int dayIndex = 0;
       for (var dayBlock in scheduleList) {
         if (dayBlock['isActive'] == true) {
@@ -255,8 +261,10 @@ class EditVenueController extends GetxController {
 
           List slots = dayBlock['slots'];
           for (int slotIndex = 0; slotIndex < slots.length; slotIndex++) {
-            fields["venueAvailabilities[$dayIndex][scheduleSlots][$slotIndex][from]"] = slots[slotIndex]['start'];
-            fields["venueAvailabilities[$dayIndex][scheduleSlots][$slotIndex][to]"] = slots[slotIndex]['end'];
+            fields["venueAvailabilities[$dayIndex][scheduleSlots][$slotIndex][from]"] =
+                slots[slotIndex]['start'];
+            fields["venueAvailabilities[$dayIndex][scheduleSlots][$slotIndex][to]"] =
+                slots[slotIndex]['end'];
           }
           dayIndex++;
         }
@@ -268,7 +276,11 @@ class EditVenueController extends GetxController {
       }
 
       // Call the API with the reconstructed fields
-      final response = await ApiClient.patchMultipartData(ApiUrl.updateVenue(id: venueId), fields, multipartBody: multipartBody,);
+      final response = await ApiClient.patchMultipartData(
+        ApiUrl.updateVenue(id: venueId),
+        fields,
+        multipartBody: multipartBody,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.back();
@@ -329,7 +341,9 @@ class EditVenueController extends GetxController {
     scheduleList.add({
       "day": "SUNDAY",
       "isActive": true,
-      "slots": [{"start": "09:00 AM", "end": "10:00 AM"}]
+      "slots": [
+        {"start": "09:00 AM", "end": "10:00 AM"},
+      ],
     });
   }
 
@@ -337,7 +351,10 @@ class EditVenueController extends GetxController {
     if (scheduleList.length > 1) {
       scheduleList.removeAt(index);
     } else {
-      showCustomSnackBar("At least one day schedule is required", isError: true);
+      showCustomSnackBar(
+        "At least one day schedule is required",
+        isError: true,
+      );
     }
   }
 
