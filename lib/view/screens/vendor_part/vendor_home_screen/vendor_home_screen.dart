@@ -5,7 +5,7 @@ import 'package:izz_atlas_app/utils/app_icons/app_icons.dart';
 import 'package:izz_atlas_app/view/components/custom_image/custom_image.dart';
 import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/components/custom_nav_bar/vendor_navbar.dart';
-import 'package:izz_atlas_app/view/screens/vendor_part/vendor_home_screen/controller/vendor_my_venue_controller.dart';
+import 'package:izz_atlas_app/view/screens/vendor_part/vendor_home_screen/controller/vendor_my_booking_controller.dart';
 import '../../../../core/app_routes/app_routes.dart';
 import '../../../components/custom_text/custom_text.dart';
 import '../vendor_profile_screen/controller/vendor_profile_controller.dart';
@@ -18,7 +18,7 @@ class VendorHomeScreen extends StatelessWidget {
    VendorHomeScreen({super.key});
   final VendorHomeController controller = Get.put(VendorHomeController());
   final VendorProfileController vendorProfileController =Get.put(VendorProfileController());
-  final VendorMyVenueController vendorMyVenueController = Get.put(VendorMyVenueController());
+  final VendorMyBookingController vendorMyBookingController = Get.put(VendorMyBookingController());
   final RxBool isBookingChartVisible = false.obs;
   final RxBool isEarningsChartVisible = false.obs;
 
@@ -26,7 +26,7 @@ class VendorHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       vendorProfileController.getUserProfile();
-      vendorMyVenueController.getMyVenues();
+      vendorMyBookingController.fetchInitialBookings("Requested");
       controller.getVendorEarnings();
     });
 
@@ -159,11 +159,11 @@ class VendorHomeScreen extends StatelessWidget {
                 bottom: 20,
               ),
               Obx(() {
-                if (vendorMyVenueController.isLoading.value) {
+                if (vendorMyBookingController.isLoading.value) {
                   return const Center(child: CustomLoader());
                 }
-                var venues = vendorMyVenueController.myVenueList;
-                if (venues.isEmpty) {
+                var bookings = vendorMyBookingController.bookings;
+                if (bookings.isEmpty) {
                   return Center(
                     child: CustomText(
                       text: "No recent activities found",
@@ -171,13 +171,13 @@ class VendorHomeScreen extends StatelessWidget {
                     ),
                   );
                 }
-                int count = venues.length > 5 ? 5 : venues.length;
+                int count = bookings.length > 5 ? 5 : bookings.length;
                 return Column(
                   children: List.generate(count, (index) {
-                    final venue = venues[index];
+                    final booking = bookings[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
-                      child: _buildRecentActivity(venue),
+                      child: _buildRecentActivity(booking),
                     );
                   }),
                 );
@@ -435,7 +435,7 @@ class VendorHomeScreen extends StatelessWidget {
   }
 
   /// ================= Recent Activity =================
-  Widget _buildRecentActivity(dynamic venue) {
+  Widget _buildRecentActivity(dynamic booking) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -452,7 +452,7 @@ class VendorHomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomText(
-                  text: venue.venueName ?? "Unknown Venue",
+                  text: booking.venue?.venueName ?? "Unknown Venue",
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.white,
@@ -461,7 +461,14 @@ class VendorHomeScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 CustomText(
-                  text: venue.location ?? "No Location Provided",
+                  text: "${booking.timeSlot?.from ?? ''} - ${booking.timeSlot?.to ?? ''}",
+                  fontSize: 14,
+                  color: AppColors.textClr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                CustomText(
+                  text: booking.user?.fullName ?? "Unknown User",
                   fontSize: 14,
                   color: AppColors.textClr,
                   maxLines: 1,
@@ -474,14 +481,14 @@ class VendorHomeScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.green2.withOpacity(0.2),
+              color: booking.bookingStatus == "PENDING"  ? AppColors.green2.withOpacity(0.2) : booking.bookingStatus == "CONFIRMED" ? AppColors.blue.withOpacity(0.2) : booking.bookingStatus == "CANCELLED" ? AppColors.red.withOpacity(0.2)   : Colors.deepOrange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(30),
             ),
             child: CustomText(
-              text: venue.venueStatus == true ? "ACTIVE" : "INACTIVE",
+              text: booking.bookingStatus ?? "N/A",
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: venue.venueStatus == true ? AppColors.green2 : Colors.red,
+              color: booking.bookingStatus == "PENDING"  ? AppColors.green2: booking.bookingStatus == "CONFIRMED" ? AppColors.blue: booking.bookingStatus == "CANCELLED" ? AppColors.red: Colors.deepOrange,
             ),
           ),
         ],
