@@ -3,46 +3,45 @@ import 'package:get/get.dart';
 import 'package:izz_atlas_app/utils/app_colors/app_colors.dart';
 import 'package:izz_atlas_app/utils/app_icons/app_icons.dart';
 import 'package:izz_atlas_app/view/components/custom_image/custom_image.dart';
+import 'package:izz_atlas_app/view/components/custom_loader/custom_loader.dart';
 import 'package:izz_atlas_app/view/components/custom_nav_bar/vendor_navbar.dart';
+import 'package:izz_atlas_app/view/screens/vendor_part/vendor_home_screen/controller/vendor_my_venue_controller.dart';
 import '../../../../core/app_routes/app_routes.dart';
 import '../../../components/custom_text/custom_text.dart';
 import '../vendor_profile_screen/controller/vendor_profile_controller.dart';
 import 'controller/vendor_controller.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'model/earning_model.dart';
 
-class VendorHomeScreen extends StatefulWidget {
-  const VendorHomeScreen({super.key});
-
-  @override
-  State<VendorHomeScreen> createState() => _VendorHomeScreenState();
-}
-
-class _VendorHomeScreenState extends State<VendorHomeScreen> {
+// ignore: must_be_immutable
+class VendorHomeScreen extends StatelessWidget {
+   VendorHomeScreen({super.key});
   final VendorHomeController controller = Get.put(VendorHomeController());
-  final VendorProfileController vendorProfileController =
-  Get.put(VendorProfileController());
-
-  bool isBookingChartVisible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      vendorProfileController.getUserProfile();
-    });
-  }
+  final VendorProfileController vendorProfileController =Get.put(VendorProfileController());
+  final VendorMyVenueController vendorMyVenueController = Get.put(VendorMyVenueController());
+  final RxBool isBookingChartVisible = false.obs;
+  final RxBool isEarningsChartVisible = false.obs;
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      vendorProfileController.getUserProfile();
+      vendorMyVenueController.getMyVenues();
+      controller.getVendorEarnings();
+    });
 
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Padding(
         padding: const EdgeInsets.only(top: 60, right: 16, left: 18),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: Obx(() {
+          if (controller.isVendorEarningsLoading.value) {
+            return const Center(child: CustomLoader());
+          }
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               /// Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,15 +77,18 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
               }),
 
               /// Dashboard Cards
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildDashboardCard(
-                      "Total Bookings", "128", "This month"),
-                  _buildDashboardCard(
-                      "Total Earnings", "85,200", "This month"),
-                ],
-              ),
+              Obx(() {
+                 final earningData = controller.vendorEarnings.value;
+                 return Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                   children: [
+                     _buildDashboardCard(
+                         "Total Bookings", "${earningData?.currentMonthBookings ?? 0}", "This month"),
+                     _buildDashboardCard(
+                         "Total Earnings", "\$${earningData?.currentMonthEarnings ?? 0}", "This month"),
+                   ],
+                 );
+              }),
 
               CustomText(
                 text: "Quick Actions",
@@ -103,7 +105,7 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
                 },
               ),
               const SizedBox(height: 20),
-
+              // my create venue
               QuickButton(
                 text: "MY VENUES",
                 onTap: () {
@@ -112,34 +114,79 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
               ),
               const SizedBox(height: 20),
 
+              /// EARNINGS TREND
+              QuickButton(
+                text: "EARNINGS TREND",
+                onTap: () {
+                  isEarningsChartVisible.toggle();
+                  if (isEarningsChartVisible.value) isBookingChartVisible.value = false;
+                },
+              ),
+
+              Obx(() {
+                if (isEarningsChartVisible.value) {
+                  return _buildEarningsTrendChart(context);
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
+              const SizedBox(height: 20),
+
               /// BOOKINGS TREND
               QuickButton(
                 text: "BOOKINGS TREND",
                 onTap: () {
-                  setState(() {
-                    isBookingChartVisible = !isBookingChartVisible;
-                  });
+                  isBookingChartVisible.toggle();
+                  if (isBookingChartVisible.value) isEarningsChartVisible.value = false;
                 },
               ),
 
-              if (isBookingChartVisible)
-                _buildBookingsTrendChart(screenWidth),
+              Obx(() {
+                if (isBookingChartVisible.value) {
+                  return _buildBookingsTrendChart(context);
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
 
               Center(child: CustomImage(imageSrc: AppIcons.arrowDown)),
               const SizedBox(height: 30),
-
+             // ===== Recent Activity =======
               CustomText(
                 text: "Recent Activity",
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 bottom: 20,
               ),
-
-              _buildRecentActivity(),
+              Obx(() {
+                if (vendorMyVenueController.isLoading.value) {
+                  return const Center(child: CustomLoader());
+                }
+                var venues = vendorMyVenueController.myVenueList;
+                if (venues.isEmpty) {
+                  return Center(
+                    child: CustomText(
+                      text: "No recent activities found",
+                      color: AppColors.textClr,
+                    ),
+                  );
+                }
+                int count = venues.length > 5 ? 5 : venues.length;
+                return Column(
+                  children: List.generate(count, (index) {
+                    final venue = venues[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: _buildRecentActivity(venue),
+                    );
+                  }),
+                );
+              }),
             ],
-          ),
-        ),
-      ),
+          ), // closes Column
+        ); // closes SingleChildScrollView
+      }), // closes Obx
+      ), // closes Padding
       bottomNavigationBar: const VendorNavbar(currentIndex: 0),
     );
   }
@@ -179,68 +226,103 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
     );
   }
 
-  /// ================= RESPONSIVE BOOKINGS TREND CHART =================
-  Widget _buildBookingsTrendChart(double screenWidth) {
-    final chartHeight = MediaQuery.of(context).size.height * 0.28;
+  Widget _buildEarningsTrendChart(BuildContext context) {
+    final earningsData = controller.vendorEarnings.value;
+    final List<EarningsTrend> trend = earningsData?.earningsTrend ?? [];
+    
+    if (trend.isEmpty) {
+       return const Padding(
+         padding: EdgeInsets.all(16.0),
+         child: Center(child: Text("No earnings data available for this year", style: TextStyle(color: Colors.grey))),
+       );
+    }
+
+    final double maxEarning = trend.fold(0.0, (m, t) => (t.earnings ?? 0) > m ? (t.earnings ?? 0).toDouble() : m);
+    final double maxY = maxEarning == 0 ? 10 : maxEarning * 1.2;
 
     return Container(
+      height: 280,
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: const LinearGradient(
-          colors: [
-            Color(0xff0F172A),
-            Color(0xff020617),
-          ],
+          colors: [Color(0xff0F172A), Color(0xff020617)],
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
-                text: "Earnings Trend",
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.white,
-              ),
+              CustomText(text: "Earnings Trend", fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.white),
               Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: CustomText(
-                  text: "This Week",
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(20)),
+                child: CustomText(text: "This Year", fontSize: 12, fontWeight: FontWeight.w500),
               ),
             ],
           ),
-
           const SizedBox(height: 20),
-
-          /// Chart Bars
-          SizedBox(
-            height: chartHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _responsiveBar("Mon", 0.3, chartHeight, screenWidth),
-                _responsiveBar("Tue", 0.45, chartHeight, screenWidth),
-                _responsiveBar("Wed", 0.6, chartHeight, screenWidth),
-                _responsiveBar("Thu", 0.75, chartHeight, screenWidth),
-                _responsiveBar("Fri", 0.9, chartHeight, screenWidth),
-                _responsiveBar("Sat", 0.6, chartHeight, screenWidth),
-                _responsiveBar("Sun", 0.7, chartHeight, screenWidth),
-              ],
+          Expanded(
+            child: BarChart(
+              BarChartData(
+                maxY: maxY,
+                barGroups: trend.asMap().entries.map((e) {
+                  return BarChartGroupData(
+                    x: e.key,
+                    barRods: [
+                      BarChartRodData(
+                        toY: (e.value.earnings ?? 0).toDouble(),
+                        color: Colors.amber,
+                        width: 14,
+                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+                      )
+                    ],
+                  );
+                }).toList(),
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: (value, meta) {
+                        return Padding(
+                           padding: const EdgeInsets.only(right: 8),
+                           child: Text(
+                             value >= 1000 ? "\$${(value / 1000).toStringAsFixed(0)}k" : "\$${value.toStringAsFixed(0)}",
+                             style: const TextStyle(color: Colors.grey, fontSize: 10),
+                             textAlign: TextAlign.right,
+                           ),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        if (value.toInt() < 0 || value.toInt() >= trend.length) return const SizedBox();
+                        String month = trend[value.toInt()].month ?? "";
+                        if (month.length > 3) month = month.substring(0, 3);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(month, style: const TextStyle(color: Colors.grey, fontSize: 10)),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1),
+                ),
+                borderData: FlBorderData(show: false),
+              ),
             ),
           ),
         ],
@@ -248,35 +330,112 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
     );
   }
 
-  Widget _responsiveBar(
-      String day,
-      double percentage,
-      double chartHeight,
-      double screenWidth,
-      ) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Container(
-          width: screenWidth * 0.035,
-          height: chartHeight * percentage,
-          decoration: BoxDecoration(
-            color: Colors.amber,
-            borderRadius: BorderRadius.circular(6),
+  Widget _buildBookingsTrendChart(BuildContext context) {
+    final earningsData = controller.vendorEarnings.value;
+    final List<BookingsTrend> trend = earningsData?.bookingsTrend ?? [];
+    
+    if (trend.isEmpty) {
+       return const Padding(
+         padding: EdgeInsets.all(16.0),
+         child: Center(child: Text("No booking data available for this year", style: TextStyle(color: Colors.grey))),
+       );
+    }
+
+    final double maxBooking = trend.fold(0.0, (m, t) => (t.bookings ?? 0) > m ? (t.bookings ?? 0).toDouble() : m);
+    final double maxY = maxBooking == 0 ? 10 : maxBooking * 1.2;
+
+    return Container(
+      height: 280,
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [Color(0xff0F172A), Color(0xff020617)],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(text: "Bookings Trend", fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.white),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(20)),
+                child: CustomText(text: "This Year", fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 6),
-        CustomText(
-          text: day,
-          fontSize: 12,
-          color: AppColors.white,
-        ),
-      ],
+          const SizedBox(height: 20),
+          Expanded(
+            child: LineChart(
+              LineChartData(
+                maxY: maxY,
+                minY: 0,
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: trend.asMap().entries.map((e) => FlSpot(e.key.toDouble(), (e.value.bookings ?? 0).toDouble())).toList(),
+                    isCurved: false,
+                    color: Colors.blue,
+                    barWidth: 3,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(show: true, getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(radius: 4, color: Colors.blue, strokeWidth: 2, strokeColor: Colors.white)),
+                    belowBarData: BarAreaData(show: false),
+                  ),
+                ],
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: (value, meta) {
+                        return Padding(
+                           padding: const EdgeInsets.only(right: 8),
+                           child: Text(
+                             value.toStringAsFixed(0),
+                             style: const TextStyle(color: Colors.grey, fontSize: 10),
+                             textAlign: TextAlign.right,
+                           ),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      getTitlesWidget: (value, meta) {
+                        if (value.toInt() < 0 || value.toInt() >= trend.length) return const SizedBox();
+                        String month = trend[value.toInt()].month ?? "";
+                        if (month.length > 3) month = month.substring(0, 3);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(month, style: const TextStyle(color: Colors.grey, fontSize: 10)),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1),
+                ),
+                borderData: FlBorderData(show: false),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   /// ================= Recent Activity =================
-  Widget _buildRecentActivity() {
+  Widget _buildRecentActivity(dynamic venue) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -288,38 +447,41 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomText(
-                text: "Football Ground A",
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.white,
-              ),
-              CustomText(
-                text: "10:00 AM - 12:00 PM",
-                fontSize: 14,
-                color: AppColors.textClr,
-              ),
-              CustomText(
-                text: "John Smith",
-                fontSize: 14,
-                color: AppColors.textClr,
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  text: venue.venueName ?? "Unknown Venue",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.white,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 4),
+                CustomText(
+                  text: venue.location ?? "No Location Provided",
+                  fontSize: 14,
+                  color: AppColors.textClr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
+          SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.green2.withValues(alpha: .2),
+              color: AppColors.green2.withOpacity(0.2),
               borderRadius: BorderRadius.circular(30),
             ),
             child: CustomText(
-              text: "CONFIRMED",
+              text: venue.venueStatus == true ? "ACTIVE" : "INACTIVE",
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColors.green2,
+              color: venue.venueStatus == true ? AppColors.green2 : Colors.red,
             ),
           ),
         ],

@@ -36,6 +36,7 @@ class ApiUrl {
   static String vendorBookingsByStatus({required String status}) =>"/venue-bookings/specific-vendor-bookings?filter=${status.toLowerCase()}"; 
   static String acceptBooking({required String id}) => "/venue-bookings/$id/accept";
   static String rejectBooking({required String id}) => "/venue-bookings/$id/reject";
+  static String vendorEarnings({required String year}) => "/statistics/vendor-earnings?year=$year";
   /// ======================== user =======================
   static String initialText({required String id}) => "/messages/my-channel/$id";
   static String initialSendText({required String id}) => "/messages/send-message/$id";
