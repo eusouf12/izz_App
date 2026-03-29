@@ -10,16 +10,21 @@ import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_fuilt
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_controller/user_all_sports_controller.dart';
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/widgets/custom_results_venue_container.dart';
 import '../../../../utils/app_colors/app_colors.dart';
+import '../../../components/custom_guest_login_dialog/custom_guest_login_dialog.dart';
 import '../../../components/custom_text_field/custom_text_field.dart';
 
 class UserSearchVenueScreen extends StatelessWidget {
   UserSearchVenueScreen({super.key});
-  final UserAllSportsController userAllSportsController = Get.put(UserAllSportsController());
-  final  selectedSportsType = Get.arguments;
+  final UserAllSportsController userAllSportsController = Get.put(
+    UserAllSportsController(),
+  );
+  final args = Get.arguments;
   final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final selectedSportsType = args["sportName"];
+    final page = args["page"];
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userAllSportsController.allSports(filter: selectedSportsType);
@@ -32,7 +37,6 @@ class UserSearchVenueScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
-
             /// SEARCH FIELD
             CustomTextField(
               fillColor: AppColors.white,
@@ -45,7 +49,9 @@ class UserSearchVenueScreen extends StatelessWidget {
                 userAllSportsController.selectedVenue.value = value;
                 Future.delayed(const Duration(milliseconds: 500), () {
                   if (searchController.text == value) {
-                    userAllSportsController.allSports(filter: selectedSportsType);
+                    userAllSportsController.allSports(
+                      filter: selectedSportsType,
+                    );
                   }
                 });
               },
@@ -59,16 +65,14 @@ class UserSearchVenueScreen extends StatelessWidget {
               children: [
                 CustomText(
                   text:
-                  "RESULTS FOR '${selectedSportsType.isNotEmpty ? selectedSportsType : 'VENUE'}'",
+                      "RESULTS FOR '${selectedSportsType.isNotEmpty ? selectedSportsType : 'VENUE'}'",
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                 ),
                 GestureDetector(
                   onTap: () {
                     Get.bottomSheet(
-                      UserFilterScreen(
-                        sportType: selectedSportsType,
-                      ),
+                      UserFilterScreen(sportType: selectedSportsType),
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
                     );
@@ -81,10 +85,7 @@ class UserSearchVenueScreen extends StatelessWidget {
                         width: 20,
                       ),
                       const SizedBox(width: 6),
-                      CustomText(
-                        text: "FILTERS",
-                        fontSize: 14,
-                      ),
+                      CustomText(text: "FILTERS", fontSize: 14),
                     ],
                   ),
                 ),
@@ -96,24 +97,35 @@ class UserSearchVenueScreen extends StatelessWidget {
             /// VENUE LIST
             Expanded(
               child: Obx(() {
-                if (userAllSportsController.isSportsLoading.value && userAllSportsController.allSportsVenueFilter.isEmpty) {
+                if (userAllSportsController.isSportsLoading.value &&
+                    userAllSportsController.allSportsVenueFilter.isEmpty) {
                   return const Center(child: CustomLoader());
                 }
                 if (userAllSportsController.allSportsVenueFilter.isEmpty) {
                   return const Center(child: Text("No venues found"));
                 }
-                final venuesList = userAllSportsController.allSportsVenueFilter.expand((group) => group.venues).toList();
+                final venuesList = userAllSportsController.allSportsVenueFilter
+                    .expand((group) => group.venues)
+                    .toList();
 
                 return NotificationListener<ScrollNotification>(
                   onNotification: (ScrollNotification scrollInfo) {
-                    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && !userAllSportsController.isSportsLoadMore.value) {
-                      userAllSportsController.allSports(isLoadMoreRequest: true);
+                    if (scrollInfo.metrics.pixels ==
+                            scrollInfo.metrics.maxScrollExtent &&
+                        !userAllSportsController.isSportsLoadMore.value) {
+                      userAllSportsController.allSports(
+                        isLoadMoreRequest: true,
+                      );
                     }
                     return false;
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.only(bottom: 20),
-                    itemCount: venuesList.length + (userAllSportsController.isSportsLoadMore.value ? 1 : 0),
+                    itemCount:
+                        venuesList.length +
+                        (userAllSportsController.isSportsLoadMore.value
+                            ? 1
+                            : 0),
                     itemBuilder: (context, index) {
                       if (index == venuesList.length) {
                         return const Padding(
@@ -133,10 +145,18 @@ class UserSearchVenueScreen extends StatelessWidget {
                         rating: venue.venueRating.toString(),
                         imageUrl: venue.venueImage,
                         onTap: () {
-                          Get.toNamed(
-                            AppRoutes.userVenueDetailsScreen,
-                            arguments: {"venueId":venue.id , "page": "booking","vendorId":venue.vendorId},
-                          );
+                          if (page == "guest") {
+                            showGuestLoginDialog();
+                          } else {
+                            Get.toNamed(
+                              AppRoutes.userVenueDetailsScreen,
+                              arguments: {
+                                "venueId": venue.id,
+                                "page": "booking",
+                                "vendorId": venue.vendorId,
+                              },
+                            );
+                          }
                         },
                       );
                     },

@@ -121,14 +121,14 @@ class UserHomeScreen extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 8),
                             child: GestureDetector(
                               onTap: () {
-                                if (page == "guest") {
-                                  showGuestLoginDialog();
-                                } else {
-                                    Get.toNamed(
+                                  Get.toNamed(
                                     AppRoutes.userSearchVenueScreen,
-                                    arguments: sportData.sportName,
+                                    arguments: {
+                                      "sportName": sportData.sportName,
+                                      "page": page,
+                                    },
                                   );
-                                }
+                              
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(13),

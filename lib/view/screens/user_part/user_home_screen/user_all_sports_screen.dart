@@ -115,14 +115,10 @@ class UserAllSportsScreen extends StatelessWidget {
 
                       return GestureDetector(
                         onTap: () {
-                          if (page == "guest") {
-                            showGuestLoginDialog();
-                          } else {
-                            Get.toNamed(
-                              AppRoutes.userSearchVenueScreen,
-                              arguments: sport.sportName,
-                            );
-                          }
+                          Get.toNamed(
+                            AppRoutes.userSearchVenueScreen,
+                            arguments: {"sportName": sport.sportName, "page": page},
+                          );
                         },
 
                         child: Stack(
