@@ -10,6 +10,7 @@ import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_
 import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/widgets/custom_nearby_container.dart';
 import '../../../components/custom_nav_bar/navbar.dart';
 import '../../../components/custom_text/custom_text.dart';
+import 'package:izz_atlas_app/view/components/custom_guest_login_dialog/custom_guest_login_dialog.dart';
 import '../../vendor_part/vendor_profile_screen/controller/vendor_profile_controller.dart';
 
 class UserHomeScreen extends StatelessWidget {
@@ -45,7 +46,9 @@ class UserHomeScreen extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    if (page != "guest") {
+                    if (page == "guest") {
+                      showGuestLoginDialog();
+                    } else {
                       Get.toNamed(AppRoutes.userNotificationScreen);
                     }
                   },
@@ -118,10 +121,14 @@ class UserHomeScreen extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 8),
                             child: GestureDetector(
                               onTap: () {
-                                Get.toNamed(
-                                  AppRoutes.userSearchVenueScreen,
-                                  arguments: sportData.sportName,
-                                );
+                                if (page == "guest") {
+                                  showGuestLoginDialog();
+                                } else {
+                                    Get.toNamed(
+                                    AppRoutes.userSearchVenueScreen,
+                                    arguments: sportData.sportName,
+                                  );
+                                }
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(13),
@@ -231,7 +238,11 @@ class UserHomeScreen extends StatelessWidget {
                   SizedBox(height: 16),
                   GestureDetector(
                     onTap: () {
-                      Get.toNamed(AppRoutes.fullscreenMapScreenNonEvent);
+                      if (page == "guest") {
+                        showGuestLoginDialog();
+                      } else {
+                        Get.toNamed(AppRoutes.fullscreenMapScreenNonEvent);
+                      }
                     },
                     child: CustomNearbyContainer(
                       imageUrl: AppConstants.nearbyVenuesImage,
@@ -242,7 +253,7 @@ class UserHomeScreen extends StatelessWidget {
                     imageUrl: AppConstants.allSportsImage,
                     title: "ALL SPORTS",
                     onTap: () {
-                      Get.toNamed(AppRoutes.userAllSportsScreen);
+                      Get.toNamed(AppRoutes.userAllSportsScreen,arguments: page);
                     },
                   ),
                 ],

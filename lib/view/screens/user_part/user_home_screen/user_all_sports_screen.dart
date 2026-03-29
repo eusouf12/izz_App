@@ -5,6 +5,7 @@ import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_
 import '../../../../core/app_routes/app_routes.dart';
 import '../../../../utils/app_colors/app_colors.dart';
 import '../../../../utils/app_const/app_const.dart';
+import '../../../components/custom_guest_login_dialog/custom_guest_login_dialog.dart';
 import '../../../components/custom_loader/custom_loader.dart';
 import '../../../components/custom_netwrok_image/custom_network_image.dart';
 import '../../../components/custom_royel_appbar/custom_royel_appbar.dart';
@@ -13,8 +14,11 @@ import '../../../components/custom_text_field/custom_text_field.dart';
 
 class UserAllSportsScreen extends StatelessWidget {
   UserAllSportsScreen({super.key});
-  final SportsTypeController sportsTypeController = Get.put(SportsTypeController());
+  final SportsTypeController sportsTypeController = Get.put(
+    SportsTypeController(),
+  );
   final TextEditingController searchController = TextEditingController();
+  final page = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +33,6 @@ class UserAllSportsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             /// Search
             CustomTextField(
               textEditingController: searchController,
@@ -42,9 +45,7 @@ class UserAllSportsScreen extends StatelessWidget {
               onChanged: (value) {
                 Future.delayed(const Duration(milliseconds: 500), () {
                   if (searchController.text == value) {
-                    sportsTypeController.getAllSports(
-                      search: value,
-                    );
+                    sportsTypeController.getAllSports(search: value);
                   }
                 });
               },
@@ -59,7 +60,6 @@ class UserAllSportsScreen extends StatelessWidget {
               fontWeight: FontWeight.w900,
             ),
 
-
             /// Sports Grid
             Expanded(
               child: Obx(() {
@@ -67,16 +67,25 @@ class UserAllSportsScreen extends StatelessWidget {
                   return const Center(child: CustomLoader());
                 }
                 if (sportsTypeController.sportsList.isEmpty) {
-                  return const Center(child: Text("No sports found (API returned empty list)", style: TextStyle(color: Colors.red)),);
+                  return const Center(
+                    child: Text(
+                      "No sports found (API returned empty list)",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  );
                 }
 
                 return NotificationListener<ScrollNotification>(
                   onNotification: (scrollInfo) {
-
-                    if (!sportsTypeController.isSportsLoadMore.value && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
-                        sportsTypeController.currentPage < sportsTypeController.totalPages) {
-
-                      sportsTypeController.getAllSports(loadMore: true, search: searchController.text,);
+                    if (!sportsTypeController.isSportsLoadMore.value &&
+                        scrollInfo.metrics.pixels ==
+                            scrollInfo.metrics.maxScrollExtent &&
+                        sportsTypeController.currentPage <
+                            sportsTypeController.totalPages) {
+                      sportsTypeController.getAllSports(
+                        loadMore: true,
+                        search: searchController.text,
+                      );
                     }
 
                     return true;
@@ -86,29 +95,34 @@ class UserAllSportsScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
 
                     gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
 
                     itemCount: sportsTypeController.sportsList.length + 1,
 
                     itemBuilder: (context, index) {
                       if (index == sportsTypeController.sportsList.length) {
-                        return sportsTypeController.isSportsLoadMore.value ? const Center(child: CustomLoader()) : const SizedBox();
+                        return sportsTypeController.isSportsLoadMore.value
+                            ? const Center(child: CustomLoader())
+                            : const SizedBox();
                       }
 
-                      final sport =
-                      sportsTypeController.sportsList[index];
+                      final sport = sportsTypeController.sportsList[index];
 
                       return GestureDetector(
                         onTap: () {
-                          Get.toNamed(
-                            AppRoutes.userSearchVenueScreen,
-                            arguments: sport.sportName,
-                          );
+                          if (page == "guest") {
+                            showGuestLoginDialog();
+                          } else {
+                            Get.toNamed(
+                              AppRoutes.userSearchVenueScreen,
+                              arguments: sport.sportName,
+                            );
+                          }
                         },
 
                         child: Stack(
@@ -118,10 +132,10 @@ class UserAllSportsScreen extends StatelessWidget {
                                   ? sport.sportsImage!
                                   : AppConstants.sports,
                               height: 190.h,
-                              width:
-                              MediaQuery.sizeOf(context).width / 2.2,
+                              width: MediaQuery.sizeOf(context).width / 2.2,
                               borderRadius: const BorderRadius.all(
-                                  Radius.circular(13)),
+                                Radius.circular(13),
+                              ),
                             ),
 
                             Positioned(
@@ -133,7 +147,7 @@ class UserAllSportsScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.white,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       );
