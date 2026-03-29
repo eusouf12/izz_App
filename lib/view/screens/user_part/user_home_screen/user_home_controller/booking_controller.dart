@@ -68,7 +68,7 @@ class BookingController extends GetxController {
 
   List<String> getDynamicCourts() {
     if (detailsController.venueDetails.value == null) return [];
-    int totalCourts = detailsController.venueDetails.value!.courtNumbers;
+    int totalCourts = detailsController.venueDetails.value!.courtNumbers.length;
     return List.generate(totalCourts, (index) => (index + 1).toString().padLeft(2, '0'));
   }
 

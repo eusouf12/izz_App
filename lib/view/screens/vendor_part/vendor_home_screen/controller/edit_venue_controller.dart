@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../../../../service/api_check.dart';
 import '../../../../../service/api_client.dart';
 import '../../../../../service/api_url.dart';
 import '../../../../../utils/ToastMsg/toast_message.dart';
@@ -14,7 +12,6 @@ import '../../../user_part/user_home_screen/user_home_controller/sports_type_con
 import 'vendor_my_venue_controller.dart';
 
 class EditVenueController extends GetxController {
-  // ================= TEXT CONTROLLERS =================
   final venueNameController = TextEditingController();
   final priceController = TextEditingController();
   final capacityController = TextEditingController();
@@ -22,62 +19,58 @@ class EditVenueController extends GetxController {
   final locationController = TextEditingController();
   final descriptionController = TextEditingController();
 
-  // ================= VARIABLES =================
   var isLoading = false.obs;
   var isUpdating = false.obs;
   String venueId = "";
 
   var selectedImage = Rx<File?>(null);
   var networkImage = "".obs;
+  var latitude = 0.0.obs;
+  var longitude = 0.0.obs;
+  var venueStatus = true.obs;
 
-  // Sports list (populated from API)
   RxList<String> sportsTypeList = <String>[].obs;
   late final SportsTypeController sportsTypeController;
   var selectedSportType = ''.obs;
 
   final daysList = [
-    "SUNDAY",
-    "MONDAY",
-    "TUESDAY",
-    "WEDNESDAY",
-    "THURSDAY",
-    "FRIDAY",
-    "SATURDAY",
+    "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY",
   ];
 
   var amenitiesList = [].obs;
   var selectedAmenities = <String>[].obs;
-
+  
   var scheduleList = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     sportsTypeController = Get.put(SportsTypeController());
+    
     ever<List<SportsType>>(sportsTypeController.sportsList, (_) {
-      final names = sportsTypeController.sportsList
-          .where((e) => e.sportName != null && e.sportName!.trim().isNotEmpty)
-          .map((e) => e.sportName!.trim())
-          .toList();
-      sportsTypeList.assignAll(names);
-      // If venue data already loaded, sync selectedSportType against the new list
-      if (sportsTypeList.isNotEmpty && selectedSportType.value.isEmpty) {
-        selectedSportType.value = sportsTypeList.first;
-      }
+      _populateSportsList();
     });
+
     if (sportsTypeController.sportsList.isEmpty) {
       sportsTypeController.getAllSports();
     } else {
-      // Sports already cached — populate immediately
-      final names = sportsTypeController.sportsList
-          .where((e) => e.sportName != null && e.sportName!.trim().isNotEmpty)
-          .map((e) => e.sportName!.trim())
-          .toList();
-      sportsTypeList.assignAll(names);
+      _populateSportsList();
     }
+
     if (Get.arguments != null) {
       venueId = Get.arguments;
       getVenueDetails(venueId);
+    }
+  }
+
+  void _populateSportsList() {
+    final names = sportsTypeController.sportsList
+        .where((e) => e.sportName != null && e.sportName!.trim().isNotEmpty)
+        .map((e) => e.sportName!.trim())
+        .toList();
+    sportsTypeList.assignAll(names);
+    if (sportsTypeList.isNotEmpty && selectedSportType.value.isEmpty) {
+      selectedSportType.value = sportsTypeList.first;
     }
   }
 
@@ -85,7 +78,6 @@ class EditVenueController extends GetxController {
     isLoading.value = true;
     try {
       final response = await ApiClient.getData(ApiUrl.userVenueDetails(id: id));
-
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.body is String
             ? jsonDecode(response.body)
@@ -97,246 +89,134 @@ class EditVenueController extends GetxController {
         venueNameController.text = venue.venueName;
         priceController.text = venue.pricePerHour.toString();
         capacityController.text = venue.capacity.toString();
-        courtNumberController.text = venue.courtNumbers.toString();
+        courtNumberController.text = venue.courtNumbers.length.toString();
         locationController.text = venue.location;
         descriptionController.text = venue.description;
-
-        final venueSport = venue.sportsType.trim();
-        // Match against the API list (case-insensitive); fall back to raw value
-        final matched = sportsTypeList.firstWhereOrNull(
-          (s) => s.toLowerCase() == venueSport.toLowerCase(),
-        );
-        selectedSportType.value = matched ?? venueSport;
-
+        venueStatus.value = venue.venueStatus;
         networkImage.value = venue.venueImage;
 
-        selectedAmenities.clear();
-        for (var element in venue.amenities) {
-          selectedAmenities.add(element.amenityName);
-          if (!amenitiesList.contains(element.amenityName)) {
-            amenitiesList.add(element.amenityName);
-          }
+        selectedSportType.value = venue.sportsType;
+
+        selectedAmenities.assignAll(venue.amenities.map((e) => e.amenityName));
+        for (var a in venue.amenities) {
+          if (!amenitiesList.contains(a.amenityName)) amenitiesList.add(a.amenityName);
         }
 
         scheduleList.clear();
         for (var availability in venue.venueAvailabilities) {
-          List<Map<String, String>> slots = [];
+          List<Map<String, dynamic>> slots = [];
           for (var slot in availability.scheduleSlots) {
-            slots.add({"start": slot.from, "end": slot.to});
+            slots.add({
+              "id": slot.id, 
+              "start": slot.from, 
+              "end": slot.to
+            });
           }
 
-          String apiDay = availability.day.toUpperCase();
-          if (!daysList.contains(apiDay)) {
-            apiDay = daysList.firstWhere(
-              (d) => d.toUpperCase() == apiDay,
-              orElse: () => "SUNDAY",
-            );
-          }
-
-          scheduleList.add({"day": apiDay, "isActive": true, "slots": slots});
+          scheduleList.add({
+            "id": availability.id,
+            "day": availability.day.toUpperCase(),
+            "isActive": true,
+            "slots": slots,
+          });
         }
 
-        if (scheduleList.isEmpty) {
-          addNewDayBlock();
-        }
-      } else {
-        ApiChecker.checkApi(response);
+        if (scheduleList.isEmpty) addNewDayBlock();
       }
     } catch (e) {
-      showCustomSnackBar("Error fetching data: $e", isError: true);
+      debugPrint("Fetch Error: $e");
     } finally {
       isLoading.value = false;
     }
   }
 
-  int _timeToMinutes(String timeString) {
-    try {
-      final format = RegExp(r"(\d+):(\d+)\s(AM|PM)");
-      final match = format.firstMatch(timeString);
-      if (match == null) return 0;
-
-      int hour = int.parse(match.group(1)!);
-      int minute = int.parse(match.group(2)!);
-      String period = match.group(3)!;
-
-      if (period == 'PM' && hour != 12) hour += 12;
-      if (period == 'AM' && hour == 12) hour = 0;
-
-      return (hour * 60) + minute;
-    } catch (e) {
-      return 0;
-    }
-  }
-
-  bool validateScheduleOverlap() {
-    for (var dayBlock in scheduleList) {
-      if (dayBlock['isActive'] == true) {
-        List slots = dayBlock['slots'];
-        String dayName = dayBlock['day'];
-
-        for (int i = 0; i < slots.length; i++) {
-          int startA = _timeToMinutes(slots[i]['start']);
-          int endA = _timeToMinutes(slots[i]['end']);
-
-          if (startA >= endA) {
-            showCustomSnackBar(
-              "$dayName: Start time cannot be greater or equal to End time.",
-              isError: true,
-            );
-            return false;
-          }
-
-          for (int j = i + 1; j < slots.length; j++) {
-            int startB = _timeToMinutes(slots[j]['start']);
-            int endB = _timeToMinutes(slots[j]['end']);
-
-            if (startA < endB && endA > startB) {
-              showCustomSnackBar(
-                "Time conflict detected on $dayName.\n(${slots[i]['start']}-${slots[i]['end']}) overlaps with (${slots[j]['start']}-${slots[j]['end']})",
-                isError: true,
-              );
-              return false;
-            }
-          }
-        }
-      }
-    }
-    return true;
-  }
-
-  // ===================== update =========================================
+  // ===================== UPDATE VENUE (FINAL LOGIC) =====================
   Future<void> updateVenue() async {
+    if (isUpdating.value) return;
     isUpdating.value = true;
 
-    String priceInput = priceController.text.trim();
-    String capacityInput = capacityController.text.trim();
-    String courtInput = courtNumberController.text.trim();
-
-    if (priceInput.isEmpty || capacityInput.isEmpty || courtInput.isEmpty) {
-      showCustomSnackBar("All numeric fields are required!", isError: true);
-      isUpdating.value = false;
-      return;
-    }
-
-    double? price = double.tryParse(priceInput);
-    int? capacity = int.tryParse(capacityInput);
-    int? courtNumbers = int.tryParse(courtInput);
-
-    if (price == null || capacity == null || courtNumbers == null) {
-      showCustomSnackBar("Invalid number format!", isError: true);
-      isUpdating.value = false;
-      return;
-    }
-
-    if (price < 0 || capacity < 0 || courtNumbers < 0) {
-      showCustomSnackBar("Values cannot be negative!", isError: true);
-      isUpdating.value = false;
-      return;
-    }
-
-    if (!validateScheduleOverlap()) {
-      isUpdating.value = false;
-      return;
-    }
-
     try {
-      Map<String, String> fields = {
-        "venueName": venueNameController.text,
-        "sportsType": selectedSportType.value,
-        "pricePerHour": price.toString(),
-        "capacity": capacity.toString(),
-        "courtNumbers": courtNumbers.toString(),
-        "location": locationController.text,
-        "description": descriptionController.text,
-      };
-
-      for (int i = 0; i < selectedAmenities.length; i++) {
-        fields["amenities[$i][amenityName]"] = selectedAmenities[i];
+      if (!validateScheduleOverlap()) {
+        isUpdating.value = false;
+        return;
       }
 
-      int dayIndex = 0;
+      final Map<String, List<Map<String, String>>> mergedDays = {};
       for (var dayBlock in scheduleList) {
         if (dayBlock['isActive'] == true) {
-          fields["venueAvailabilities[$dayIndex][day]"] = dayBlock['day'];
-
-          List slots = dayBlock['slots'];
-          for (int slotIndex = 0; slotIndex < slots.length; slotIndex++) {
-            fields["venueAvailabilities[$dayIndex][scheduleSlots][$slotIndex][from]"] =
-                slots[slotIndex]['start'];
-            fields["venueAvailabilities[$dayIndex][scheduleSlots][$slotIndex][to]"] =
-                slots[slotIndex]['end'];
+          String dayKey = dayBlock['day'].toString().toUpperCase();
+          if (!mergedDays.containsKey(dayKey)) {
+            mergedDays[dayKey] = [];
           }
-          dayIndex++;
+          for (var slot in (dayBlock['slots'] as List)) {
+            mergedDays[dayKey]!.add({
+              "from": slot['start'].toString(),
+              "to": slot['end'].toString()
+            });
+          }
         }
       }
 
-      List<MultipartBody> multipartBody = [];
-      if (selectedImage.value != null) {
-        multipartBody.add(MultipartBody("venueImage", selectedImage.value!));
-      }
+      // ২. Merged Map কে List এ রূপান্তর (পোস্টম্যান ফরম্যাট)
+      final List<Map<String, dynamic>> availabilitiesData = mergedDays.entries.map((e) {
+        // "MONDAY" -> "Monday" (as per Postman example)
+        String capitalizedDay = e.key.toLowerCase().capitalizeFirst ?? e.key;
+        return {
+          "day": capitalizedDay,
+          "scheduleSlots": e.value,
+        };
+      }).toList();
 
-      // Call the API with the reconstructed fields
+  
+      int count = int.tryParse(courtNumberController.text) ?? 1;
+      List<int> courtList = List.generate(count, (index) => index + 1);
+
+
+      final Map<String, dynamic> venueData = {
+        "venueName": venueNameController.text.trim(),
+        "sportsType": selectedSportType.value,
+        
+        "pricePerHour": (double.tryParse(priceController.text) ?? 0.0).toString(),
+        "capacity": (int.tryParse(capacityController.text) ?? 0).toString(),
+        
+        "courtNumbers": courtList, 
+        "location": locationController.text.trim(),
+        "latitude": latitude.value,
+        "longitude": longitude.value,
+        "description": descriptionController.text.trim(),
+        "venueStatus": venueStatus.value,
+        "amenities": selectedAmenities.map((a) => {"amenityName": a}).toList(),
+        "venueAvailabilities": availabilitiesData,
+      };
+
+      debugPrint("====> Venue Availabilities Payload: ${jsonEncode({"venueAvailabilities": availabilitiesData})}");
+      debugPrint("====> Full Data Body: ${jsonEncode(venueData)}");
       final response = await ApiClient.patchMultipartData(
         ApiUrl.updateVenue(id: venueId),
-        fields,
-        multipartBody: multipartBody,
+        {"data": jsonEncode(venueData)},
+        multipartBody: selectedImage.value != null 
+            ? [MultipartBody("venueImage", selectedImage.value!)] 
+            : [],
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.back();
         showCustomSnackBar("Venue updated successfully!", isError: false);
-
         if (Get.isRegistered<VendorMyVenueController>()) {
           Get.find<VendorMyVenueController>().getMyVenues();
         }
       } else {
-        String msg = response.statusText ?? "Update failed";
-        try {
-          if (response.body is String) {
-            var json = jsonDecode(response.body);
-            if (json['message'] != null) msg = json['message'];
-          } else if (response.body is Map && response.body['message'] != null) {
-            msg = response.body['message'];
-          }
-        } catch (e) {
-          debugPrint("Error parsing error msg: $e");
-        }
-        showCustomSnackBar(msg, isError: true);
+        showCustomSnackBar(response.statusText ?? "Update failed", isError: true);
       }
     } catch (e) {
-      showCustomSnackBar("Something went wrong: $e", isError: true);
-      debugPrint("Update Exception: $e");
+      showCustomSnackBar("Error: $e", isError: true);
     } finally {
       isUpdating.value = false;
     }
   }
 
-  // ================= 3. HELPER FUNCTIONS =================
+  // ===================== HELPER FUNCTIONS =====================
 
-  Future<void> pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      selectedImage.value = File(image.path);
-    }
-  }
-
-  void toggleAmenity(String amenity) {
-    if (selectedAmenities.contains(amenity)) {
-      selectedAmenities.remove(amenity);
-    } else {
-      selectedAmenities.add(amenity);
-    }
-  }
-
-  void addCustomAmenity(String name) {
-    if (name.isNotEmpty && !amenitiesList.contains(name)) {
-      amenitiesList.add(name);
-      Get.back();
-    }
-  }
-
-  // Schedule Logic
   void addNewDayBlock() {
     scheduleList.add({
       "day": "SUNDAY",
@@ -345,68 +225,80 @@ class EditVenueController extends GetxController {
         {"start": "09:00 AM", "end": "10:00 AM"},
       ],
     });
+    scheduleList.refresh(); 
   }
 
   void removeDayBlock(int index) {
     if (scheduleList.length > 1) {
       scheduleList.removeAt(index);
-    } else {
-      showCustomSnackBar(
-        "At least one day schedule is required",
-        isError: true,
-      );
+      scheduleList.refresh();
+    }
+  }
+
+  void addSlotToDay(int dayIndex) {
+    var day = scheduleList[dayIndex];
+    (day['slots'] as List).add({"start": "10:00 AM", "end": "11:00 AM"});
+    scheduleList[dayIndex] = day;
+    scheduleList.refresh();
+  }
+
+  void removeSlotFromDay(int dayIndex, int slotIndex) {
+    var day = scheduleList[dayIndex];
+    if ((day['slots'] as List).length > 1) {
+      (day['slots'] as List).removeAt(slotIndex);
+      scheduleList[dayIndex] = day;
+      scheduleList.refresh();
     }
   }
 
   void changeDay(int index, String? newDay) {
     if (newDay != null) {
-      var item = scheduleList[index];
-      item['day'] = newDay;
-      scheduleList[index] = item;
+      scheduleList[index]['day'] = newDay;
       scheduleList.refresh();
     }
   }
 
   void toggleScheduleActive(int index, bool? val) {
-    var item = scheduleList[index];
-    item['isActive'] = val ?? false;
-    scheduleList[index] = item;
+    scheduleList[index]['isActive'] = val ?? false;
     scheduleList.refresh();
   }
 
-  void addSlotToDay(int dayIndex) {
-    final dayBlock = Map<String, dynamic>.from(scheduleList[dayIndex]);
-    final slots = List<Map<String, dynamic>>.from(
-      (dayBlock['slots'] as List).map((s) => Map<String, dynamic>.from(s)),
-    );
-    slots.add({"start": "12:00 PM", "end": "01:00 PM"});
-    dayBlock['slots'] = slots;
-    scheduleList[dayIndex] = dayBlock;
+  bool validateScheduleOverlap() {
+    for (var dayBlock in scheduleList) {
+      if (dayBlock['isActive'] == true) {
+        List slots = dayBlock['slots'];
+        for (int i = 0; i < slots.length; i++) {
+          int startA = _timeToMinutes(slots[i]['start']);
+          int endA = _timeToMinutes(slots[i]['end']);
+          if (startA >= endA) {
+            showCustomSnackBar("${dayBlock['day']}: Invalid Time", isError: true);
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
-  void removeSlotFromDay(int dayIndex, int slotIndex) {
-    final dayBlock = Map<String, dynamic>.from(scheduleList[dayIndex]);
-    final slots = List<Map<String, dynamic>>.from(
-      (dayBlock['slots'] as List).map((s) => Map<String, dynamic>.from(s)),
-    );
-    if (slots.length > 1) {
-      slots.removeAt(slotIndex);
-      dayBlock['slots'] = slots;
-      scheduleList[dayIndex] = dayBlock;
-    } else {
-      showCustomSnackBar("At least one slot required", isError: true);
-    }
+  int _timeToMinutes(String timeString) {
+    try {
+      final format = RegExp(r"(\d+):(\d+)\s(AM|PM)");
+      final match = format.firstMatch(timeString);
+      if (match == null) return 0;
+      int hour = int.parse(match.group(1)!);
+      int minute = int.parse(match.group(2)!);
+      if (match.group(3) == 'PM' && hour != 12) hour += 12;
+      if (match.group(3) == 'AM' && hour == 12) hour = 0;
+      return (hour * 60) + minute;
+    } catch (_) { return 0; }
   }
 
   void changeTime(int dayIndex, int slotIndex, String key, int minutes) {
-    final dayBlock = Map<String, dynamic>.from(scheduleList[dayIndex]);
-    final slots = List<Map<String, dynamic>>.from(
-      (dayBlock['slots'] as List).map((s) => Map<String, dynamic>.from(s)),
-    );
-    final currentTime = slots[slotIndex][key] as String;
-    slots[slotIndex][key] = _adjustTime(currentTime, minutes);
-    dayBlock['slots'] = slots;
-    scheduleList[dayIndex] = dayBlock;
+    var day = scheduleList[dayIndex];
+    var slots = day['slots'] as List;
+    slots[slotIndex][key] = _adjustTime(slots[slotIndex][key], minutes);
+    scheduleList[dayIndex] = day;
+    scheduleList.refresh();
   }
 
   String _adjustTime(String currentTime, int minutesToAdd) {
@@ -416,19 +308,41 @@ class EditVenueController extends GetxController {
       if (match == null) return currentTime;
       int hour = int.parse(match.group(1)!);
       int minute = int.parse(match.group(2)!);
-      String period = match.group(3)!;
-      if (period == 'PM' && hour != 12) hour += 12;
-      if (period == 'AM' && hour == 12) hour = 0;
-      final now = DateTime.now();
-      final dt = DateTime(now.year, now.month, now.day, hour, minute);
-      final newDt = dt.add(Duration(minutes: minutesToAdd));
-      final newTimeOfDay = TimeOfDay.fromDateTime(newDt);
-      final h = newTimeOfDay.hourOfPeriod == 0 ? 12 : newTimeOfDay.hourOfPeriod;
-      final m = newTimeOfDay.minute.toString().padLeft(2, '0');
-      final p = newTimeOfDay.period == DayPeriod.am ? 'AM' : 'PM';
-      return "$h:$m $p";
-    } catch (e) {
-      return currentTime;
+      if (match.group(3) == 'PM' && hour != 12) hour += 12;
+      if (match.group(3) == 'AM' && hour == 12) hour = 0;
+      final dt = DateTime(2024, 1, 1, hour, minute).add(Duration(minutes: minutesToAdd));
+      final h = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
+      final p = dt.hour >= 12 ? 'PM' : 'AM';
+      return "$h:${dt.minute.toString().padLeft(2, '0')} $p";
+    } catch (e) { return currentTime; }
+  }
+
+  Future<void> pickImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image != null) selectedImage.value = File(image.path);
+  }
+
+  void toggleAmenity(String amenity) {
+    selectedAmenities.contains(amenity) ? selectedAmenities.remove(amenity) : selectedAmenities.add(amenity);
+  }
+  final customAmenityController = TextEditingController(); 
+  void addCustomAmenity(String name) {
+    String cleanName = name.trim();
+    if (cleanName.isNotEmpty) {
+      // যদি আগে থেকে লিস্টে না থাকে তবে অ্যাড হবে
+      if (!amenitiesList.contains(cleanName)) {
+        amenitiesList.add(cleanName);
+      }
+      
+      // অটোমেটিক সিলেক্ট করে দেওয়া
+      if (!selectedAmenities.contains(cleanName)) {
+        selectedAmenities.add(cleanName);
+      }
+      
+      customAmenityController.clear();
+      Get.back(); 
+    } else {
+      showCustomSnackBar("Amenity name cannot be empty", isError: true);
     }
   }
 }

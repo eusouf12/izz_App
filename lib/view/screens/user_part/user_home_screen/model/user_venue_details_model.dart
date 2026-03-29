@@ -24,7 +24,7 @@ class VenueDetails {
   final String sportsType;
   final double pricePerHour;
   final int capacity;
-  final int courtNumbers;
+  final List<int> courtNumbers; // ✅ পরিবর্তিত: এখন এটি List<int>
   final String location;
   final bool venueStatus;
   final String description;
@@ -54,45 +54,36 @@ class VenueDetails {
   });
 
   factory VenueDetails.fromJson(Map<String, dynamic> json) {
-
-    // ✅ Handle courtNumbers
-    int parsedCourtNumbers = 1;
+    // ✅ courtNumbers List হ্যান্ডেল করা
+    List<int> parsedCourts = [];
     if (json['courtNumbers'] is List) {
-      parsedCourtNumbers = (json['courtNumbers'] as List).length;
-    } else {
-      parsedCourtNumbers = int.tryParse(json['courtNumbers']?.toString() ?? '1') ?? 1;
+      parsedCourts = List<int>.from(json['courtNumbers']);
     }
 
     List<VenueAvailability> cleanAvailabilities = [];
 
     if (json['venueAvailabilities'] != null) {
-      var rawList = List<VenueAvailability>.from(
-          json['venueAvailabilities'].map((x) => VenueAvailability.fromJson(x)));
+      // আমরা দিন অনুযায়ী ডাটা গ্রুপ করবো যাতে একই দিনের স্লটগুলো একসাথে থাকে
+      Map<String, VenueAvailability> dayMap = {};
 
-      Map<String, List<ScheduleSlot>> dayMap = {};
+      for (var item in json['venueAvailabilities']) {
+        var availability = VenueAvailability.fromJson(item);
+        String dayKey = availability.day.trim().toUpperCase();
 
-      for (var item in rawList) {
-        String dayKey = item.day.trim().toUpperCase();
-        if (!dayMap.containsKey(dayKey)) {
-          dayMap[dayKey] = [];
-        }
-        dayMap[dayKey]!.addAll(item.scheduleSlots);
-      }
-
-      dayMap.forEach((day, slots) {
-        final uniqueSlots = <ScheduleSlot>[];
-        final seenSlots = <String>{};
-
-        for (var slot in slots) {
-          String key = "${slot.from}-${slot.to}";
-          if (!seenSlots.contains(key)) {
-            seenSlots.add(key);
-            uniqueSlots.add(slot);
+        if (dayMap.containsKey(dayKey)) {
+          // যদি দিনটি ইতিমধ্যে থাকে, তবে নতুন স্লটগুলো যোগ করো এবং ডুপ্লিকেট চেক করো
+          var existingSlots = dayMap[dayKey]!.scheduleSlots;
+          for (var newSlot in availability.scheduleSlots) {
+            bool isDuplicate = existingSlots.any((s) => s.from == newSlot.from && s.to == newSlot.to);
+            if (!isDuplicate) {
+              existingSlots.add(newSlot);
+            }
           }
+        } else {
+          dayMap[dayKey] = availability;
         }
-
-        cleanAvailabilities.add(VenueAvailability(day: day, scheduleSlots: uniqueSlots));
-      });
+      }
+      cleanAvailabilities = dayMap.values.toList();
     }
 
     return VenueDetails(
@@ -102,7 +93,7 @@ class VenueDetails {
       sportsType: json['sportsType']?.toString() ?? '',
       pricePerHour: double.tryParse(json['pricePerHour']?.toString() ?? '0.0') ?? 0.0,
       capacity: int.tryParse(json['capacity']?.toString() ?? '0') ?? 0,
-      courtNumbers: parsedCourtNumbers,
+      courtNumbers: parsedCourts,
       location: json['location']?.toString() ?? '',
       venueStatus: json['venueStatus'] ?? false,
       description: json['description']?.toString() ?? '',
@@ -112,8 +103,6 @@ class VenueDetails {
           : List<Amenity>.from(json['amenities'].map((x) => Amenity.fromJson(x))),
       venueRating: json['venueRating']?.toString() ?? '0.0',
       venueReviewCount: int.tryParse(json['venueReviewCount']?.toString() ?? '0') ?? 0,
-
-      // ✅ Assigning Cleaned List
       venueAvailabilities: cleanAvailabilities,
     );
   }
@@ -128,41 +117,44 @@ class Amenity {
 }
 
 class VenueAvailability {
+  final String? id; 
   final String day;
   final List<ScheduleSlot> scheduleSlots;
-  VenueAvailability({required this.day, required this.scheduleSlots});
+
+  VenueAvailability({
+    this.id, 
+    required this.day, 
+    required this.scheduleSlots,
+  });
 
   factory VenueAvailability.fromJson(Map<String, dynamic> json) {
-    var rawSlots = json['scheduleSlots'] == null
-        ? <ScheduleSlot>[]
-        : List<ScheduleSlot>.from(json['scheduleSlots'].map((x) => ScheduleSlot.fromJson(x)));
-
-    final uniqueSlots = <ScheduleSlot>[];
-    final seen = <String>{};
-
-    for (var slot in rawSlots) {
-      final key = "${slot.from}-${slot.to}";
-      if (!seen.contains(key)) {
-        seen.add(key);
-        uniqueSlots.add(slot);
-      }
-    }
-
     return VenueAvailability(
+      id: json['id']?.toString(),
       day: json['day']?.toString() ?? '',
-      scheduleSlots: uniqueSlots,
+      scheduleSlots: json['scheduleSlots'] == null
+          ? []
+          : List<ScheduleSlot>.from(
+              json['scheduleSlots'].map((x) => ScheduleSlot.fromJson(x))),
     );
   }
 }
 
 class ScheduleSlot {
+  final String? id; 
   final String from;
   final String to;
-  ScheduleSlot({required this.from, required this.to});
+
+  ScheduleSlot({
+    this.id,
+    required this.from,
+    required this.to,
+  });
+
   factory ScheduleSlot.fromJson(Map<String, dynamic> json) {
     return ScheduleSlot(
-        from: json['from']?.toString() ?? '',
-        to: json['to']?.toString() ?? ''
+      id: json['id']?.toString(),
+      from: json['from']?.toString() ?? '',
+      to: json['to']?.toString() ?? '',
     );
   }
 }

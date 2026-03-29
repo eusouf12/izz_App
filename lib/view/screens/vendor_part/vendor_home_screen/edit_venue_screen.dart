@@ -44,26 +44,33 @@ class EditVenueScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           image: controller.selectedImage.value != null
                               ? DecorationImage(
-                            image: FileImage(controller.selectedImage.value!),
-                            fit: BoxFit.cover,
-                          )
+                                  image: FileImage(
+                                    controller.selectedImage.value!,
+                                  ),
+                                  fit: BoxFit.cover,
+                                )
                               : null,
                         ),
                         child: controller.selectedImage.value == null
                             ? (controller.networkImage.value.isNotEmpty
-                            ? CustomNetworkImage(
-                          imageUrl: controller.networkImage.value,
-                          height: 192,
-                          width: double.infinity,
-                          borderRadius: BorderRadius.circular(12),
-                        )
-                            : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
-                            Text("Tap to upload venue image"),
-                          ],
-                        ))
+                                  ? CustomNetworkImage(
+                                      imageUrl: controller.networkImage.value,
+                                      height: 192,
+                                      width: double.infinity,
+                                      borderRadius: BorderRadius.circular(12),
+                                    )
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.add_a_photo,
+                                          size: 40,
+                                          color: Colors.grey,
+                                        ),
+                                        Text("Tap to upload venue image"),
+                                      ],
+                                    ))
                             : null,
                       ),
                     ),
@@ -158,7 +165,9 @@ class EditVenueScreen extends StatelessWidget {
                     ),
 
                     Column(
-                      children: List.generate(controller.scheduleList.length, (dayIndex) {
+                      children: List.generate(controller.scheduleList.length, (
+                        dayIndex,
+                      ) {
                         var dayBlock = controller.scheduleList[dayIndex];
                         List slots = dayBlock['slots'];
                         return Padding(
@@ -174,7 +183,7 @@ class EditVenueScreen extends StatelessWidget {
                                   color: Colors.grey.shade100,
                                   blurRadius: 4,
                                   spreadRadius: 2,
-                                )
+                                ),
                               ],
                             ),
                             child: Column(
@@ -182,25 +191,33 @@ class EditVenueScreen extends StatelessWidget {
                               children: [
                                 // Day Row
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 12),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
                                       decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey.shade300),
+                                        border: Border.all(
+                                          color: Colors.grey.shade300,
+                                        ),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: DropdownButtonHideUnderline(
                                         child: DropdownButton<String>(
                                           value: dayBlock['day'],
                                           icon: Icon(Icons.arrow_drop_down),
-                                          items: controller.daysList.map((String day) {
+                                          items: controller.daysList.map((
+                                            String day,
+                                          ) {
                                             return DropdownMenuItem<String>(
                                               value: day,
                                               child: Text(day),
                                             );
                                           }).toList(),
-                                          onChanged: (newValue) => controller.changeDay(dayIndex, newValue),
+                                          onChanged: (newValue) => controller
+                                              .changeDay(dayIndex, newValue),
                                         ),
                                       ),
                                     ),
@@ -208,12 +225,20 @@ class EditVenueScreen extends StatelessWidget {
                                       children: [
                                         Checkbox(
                                           value: dayBlock['isActive'],
-                                          onChanged: (val) => controller.toggleScheduleActive(dayIndex, val),
+                                          onChanged: (val) =>
+                                              controller.toggleScheduleActive(
+                                                dayIndex,
+                                                val,
+                                              ),
                                           activeColor: Colors.black,
                                         ),
                                         InkWell(
-                                          onTap: () => controller.removeDayBlock(dayIndex),
-                                          child: Icon(Icons.delete_outline, color: Colors.grey.shade500),
+                                          onTap: () => controller
+                                              .removeDayBlock(dayIndex),
+                                          child: Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.grey.shade500,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -222,47 +247,109 @@ class EditVenueScreen extends StatelessWidget {
                                 const SizedBox(height: 12),
                                 Divider(height: 1, color: Colors.grey.shade200),
                                 const SizedBox(height: 12),
-
                                 // Slots Loop
                                 ...List.generate(slots.length, (slotIndex) {
                                   var slot = slots[slotIndex];
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: 12.0),
+                                    padding: const EdgeInsets.only(
+                                      bottom: 12.0,
+                                    ),
                                     child: Row(
                                       children: [
                                         Expanded(
                                           child: _buildTimeController(
                                             time: slot['start'].toString(),
-                                            onDecrease: () => controller.changeTime(dayIndex, slotIndex, "start", -30),
-                                            onIncrease: () => controller.changeTime(dayIndex, slotIndex, "start", 30),
+                                            onDecrease: () =>
+                                                controller.changeTime(
+                                                  dayIndex,
+                                                  slotIndex,
+                                                  "start",
+                                                  -30,
+                                                ),
+                                            onIncrease: () =>
+                                                controller.changeTime(
+                                                  dayIndex,
+                                                  slotIndex,
+                                                  "start",
+                                                  30,
+                                                ),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: _buildTimeController(
                                             time: slot['end'].toString(),
-                                            onDecrease: () => controller.changeTime(dayIndex, slotIndex, "end", -30),
-                                            onIncrease: () => controller.changeTime(dayIndex, slotIndex, "end", 30),
+                                            onDecrease: () =>
+                                                controller.changeTime(
+                                                  dayIndex,
+                                                  slotIndex,
+                                                  "end",
+                                                  -30,
+                                                ),
+                                            onIncrease: () =>
+                                                controller.changeTime(
+                                                  dayIndex,
+                                                  slotIndex,
+                                                  "end",
+                                                  30,
+                                                ),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        Row(
-                                          children: [
-                                            InkWell(
-                                              onTap: () => controller.removeSlotFromDay(dayIndex, slotIndex),
-                                              child: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 28),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            InkWell(
-                                              onTap: () => controller.addSlotToDay(dayIndex),
-                                              child: const Icon(Icons.add_circle_outline, color: Colors.blue, size: 28),
-                                            ),
-                                          ],
+                                        InkWell(
+                                          onTap: () =>
+                                              controller.removeSlotFromDay(
+                                                dayIndex,
+                                                slotIndex,
+                                              ),
+                                          child: const Icon(
+                                            Icons.remove_circle_outline,
+                                            color: Colors.red,
+                                            size: 28,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   );
                                 }),
+                                const SizedBox(height: 8),
+                                // ✅ Single Add Slot Button per day
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: InkWell(
+                                    onTap: () =>
+                                        controller.addSlotToDay(dayIndex),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.withOpacity(0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: const [
+                                          Icon(
+                                            Icons.add_circle_outline,
+                                            color: Colors.blue,
+                                            size: 20,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            "Add Slot",
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -277,7 +364,10 @@ class EditVenueScreen extends StatelessWidget {
                       height: 50,
                       child: ElevatedButton.icon(
                         onPressed: controller.addNewDayBlock,
-                        icon: const Icon(Icons.calendar_today, color: Colors.white),
+                        icon: const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                        ),
                         label: const Text(
                           "Add New Day Schedule",
                           style: TextStyle(fontSize: 16, color: Colors.white),
@@ -293,44 +383,56 @@ class EditVenueScreen extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-
                     // ============= Amenities Section =============
                     Row(
                       children: [
-                        CustomText(text: "Amenities", fontSize: 16, fontWeight: FontWeight.w700),
+                        CustomText(
+                          text: "Amenities",
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                         const Spacer(),
                         InkWell(
-                            onTap: () {
-                              _showAddAmenityDialog(context, controller);
-                            },
-                            child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            _showAddAmenityDialog(context, controller);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.add, color: Colors.black),
+                                const SizedBox(width: 4),
+                                CustomText(
+                                  text: "Add New",
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                child: Row(
-                                    children: [
-                                      Icon(Icons.add, color: Colors.black),
-                                      const SizedBox(width: 4),
-                                      CustomText(text: "Add New", fontSize: 14, fontWeight: FontWeight.w600),
-                                    ]
-                                )
-                            )
-                        )
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Obx(() => Row(
-                        children: controller.amenitiesList.map((amenity) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: _amenitySelectableItem(controller, amenity),
-                          );
-                        }).toList(),
-                      )),
+                      child: Obx(
+                        () => Row(
+                          children: controller.amenitiesList.map((amenity) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: _amenitySelectableItem(
+                                controller,
+                                amenity,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     CustomFormCard(
@@ -357,11 +459,11 @@ class EditVenueScreen extends StatelessWidget {
                           child: controller.isUpdating.value
                               ? const Center(child: CustomLoader())
                               : CustomButton(
-                            onTap: controller.updateVenue,
-                            textColor: AppColors.white,
-                            title: "Update",
-                          ),
-                        )
+                                  onTap: controller.updateVenue,
+                                  textColor: AppColors.white,
+                                  title: "Update",
+                                ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 50),
@@ -385,17 +487,21 @@ class EditVenueScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             gradient: isSelected
-                ? const LinearGradient(colors: [Color(0xff111827), Color(0xff1F2937)])
+                ? const LinearGradient(
+                    colors: [Color(0xff111827), Color(0xff1F2937)],
+                  )
                 : null,
             color: isSelected ? null : Colors.grey[200],
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isSelected ? Colors.transparent : Colors.grey),
+            border: Border.all(
+              color: isSelected ? Colors.transparent : Colors.grey,
+            ),
           ),
           child: CustomText(
-              text: text,
-              fontSize: 14,
-              color: isSelected ? AppColors.white : Colors.black,
-              fontWeight: FontWeight.w600
+            text: text,
+            fontSize: 14,
+            color: isSelected ? AppColors.white : Colors.black,
+            fontWeight: FontWeight.w600,
           ),
         ),
       );
@@ -418,26 +524,44 @@ class EditVenueScreen extends StatelessWidget {
         children: [
           InkWell(
             onTap: onDecrease,
-            child: const Padding(padding: EdgeInsets.symmetric(horizontal: 4.0), child: Icon(Icons.remove, size: 16)),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.0),
+              child: Icon(Icons.remove, size: 16),
+            ),
           ),
-          Text(time, style: TextStyle(color: Colors.grey.shade800, fontSize: 13, fontWeight: FontWeight.bold)),
+          Text(
+            time,
+            style: TextStyle(
+              color: Colors.grey.shade800,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           InkWell(
             onTap: onIncrease,
-            child: const Padding(padding: EdgeInsets.symmetric(horizontal: 4.0), child: Icon(Icons.add, size: 16)),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.0),
+              child: Icon(Icons.add, size: 16),
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _showAddAmenityDialog(BuildContext context, EditVenueController controller) {
+  void _showAddAmenityDialog(
+    BuildContext context,
+    EditVenueController controller,
+  ) {
     final TextEditingController textController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           backgroundColor: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -453,7 +577,12 @@ class EditVenueScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                CustomText(text: "Amenity Name", fontSize: 14, fontWeight: FontWeight.w600, bottom: 8),
+                CustomText(
+                  text: "Amenity Name",
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  bottom: 8,
+                ),
                 CustomTextField(
                   textEditingController: textController,
                   hintText: "Ex: AC, Locker, CCTV",
@@ -476,7 +605,9 @@ class EditVenueScreen extends StatelessWidget {
                     Expanded(
                       child: CustomButton(
                         onTap: () {
-                          controller.addCustomAmenity(textController.text.trim());
+                          controller.addCustomAmenity(
+                            textController.text.trim(),
+                          );
                         },
                         title: "Add",
                         textColor: Colors.white,
@@ -484,7 +615,7 @@ class EditVenueScreen extends StatelessWidget {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

@@ -26,7 +26,7 @@ class ApiUrl {
   static const String createVenue = "/venues";
   static const String vendorMyVenues = "/venues/my";
   static String userVenueDetails({required String id}) => "/venues/$id";
-  static String updateVenue({required String id}) => "/venues/$id";
+  static String updateVenue({required String id}) => "/venues/$id/update-venue-details";
   static String bookSlot({required String id}) => "/venue-bookings/$id";
   static String specificUserBookings({required String id}) =>"/venue-bookings/specific-user-bookings/$id";
   static String getReviews({required String page,required String id}) => "/reviews/venue/$id?page=$page&limit=10";
