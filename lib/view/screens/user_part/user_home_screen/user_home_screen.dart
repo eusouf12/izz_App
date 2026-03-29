@@ -262,7 +262,7 @@ class UserHomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Navbar(currentIndex: 0),
+      bottomNavigationBar: Navbar(currentIndex: 0, isGuest: page == "guest"),
     );
   }
 }
