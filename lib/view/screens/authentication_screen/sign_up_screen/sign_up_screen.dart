@@ -154,7 +154,7 @@ class SignUpScreen extends StatelessWidget {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Get.toNamed(AppRoutes.userSocialScreen);
+                                Get.toNamed(AppRoutes.userHomeScreen,arguments: "guest");
                               },
                               child: CustomText(
                                 top: 20,

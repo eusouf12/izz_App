@@ -14,7 +14,7 @@ import '../../vendor_part/vendor_profile_screen/controller/vendor_profile_contro
 
 class UserHomeScreen extends StatelessWidget {
   UserHomeScreen({super.key});
-
+  final page = Get.arguments;
   final SportsTypeController sportsController = Get.put(SportsTypeController());
   final VendorProfileController vendorProfileController = Get.put(
     VendorProfileController(),
@@ -23,7 +23,9 @@ class UserHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      vendorProfileController.getUserProfile();
+      if (page != "guest") {
+        vendorProfileController.getUserProfile();
+      }
       sportsController.getAllSports();
     });
     return Scaffold(
@@ -43,7 +45,9 @@ class UserHomeScreen extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    Get.toNamed(AppRoutes.userNotificationScreen);
+                    if (page != "guest") {
+                      Get.toNamed(AppRoutes.userNotificationScreen);
+                    }
                   },
                   icon: Icon(
                     Icons.notifications,
@@ -58,17 +62,20 @@ class UserHomeScreen extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 children: [
                   //name
-                  Obx(() {
-                    final name =
-                        vendorProfileController.userProfileModel.value.fullName;
-                    return CustomText(
-                      text: "HI $name!",
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      top: 16,
-                      textAlign: TextAlign.start,
-                    );
-                  }),
+                  if (page != "guest")
+                    Obx(() {
+                      final name = vendorProfileController
+                          .userProfileModel
+                          .value
+                          .fullName;
+                      return CustomText(
+                        text: "HI $name!",
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        top: 16,
+                        textAlign: TextAlign.start,
+                      );
+                    }),
 
                   CustomText(
                     textAlign: TextAlign.start,

@@ -147,7 +147,7 @@ class AuthController extends GetxController {
         if (userRole == "VENDOR") {
           Get.offAllNamed(AppRoutes.vendorHomeScreen);
         } else {
-          Get.offAllNamed(AppRoutes.userHomeScreen);
+          Get.offAllNamed(AppRoutes.userHomeScreen ,arguments: "login");
         }
 
         // Listen to FCM token refresh
