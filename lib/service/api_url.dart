@@ -1,7 +1,7 @@
 class ApiUrl {
   /// ================= BASE URL =================
-  //static const String baseUrl = "https://sports-izz-122-backend.onrender.com/api/v1";
-  static const String baseUrl ="https://laser-sees-barry-olympus.trycloudflare.com/api/v1";
+  //static const String baseUrl = "https://sports-izz-122-backend-bk39.onrender.com/api/v1";
+  static const String baseUrl ="https://purpose-orders-gsm-designing.trycloudflare.com/api/v1";
   static const String websocket = "https://sports-izz-122-backend.onrender.com";
 
   static String mapKey = "AIzaSyBuSZJklSc1j0D4kqhkJcmyArcZbWujbXQ";
@@ -38,7 +38,8 @@ class ApiUrl {
   static String rejectBooking({required String id}) => "/venue-bookings/$id/reject";
   static String vendorEarnings({required String year}) => "/statistics/vendor-earnings?year=$year";
   /// ======================== user =======================
-  static String initialText({required String id}) => "/messages/my-channel/$id";
+  static String initialText({required String id}) => "/messages/my-channel/$id"; 
+  static String createToyyibpayPayment({required String id}) => "/payments/create-toyyibpay-payment/$id";
   static String initialSendText({required String id}) => "/messages/send-message/$id";
   static String chatList({required String page}) =>"/messages/channels?page=$page&limit=10";
   static String getAllChat({required String channelName,required String page,}) => "/messages/get-message/$channelName/?page=$page&limit=10";

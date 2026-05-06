@@ -107,9 +107,8 @@ class UserMyBookingsScreen extends StatelessWidget {
                                     arguments: {"venueId":booking.venue?.id , "page": "myBook"}
                                 );
                               },
-                            onPaymentTap: () {
-                              // Get.toNamed(AppRoutes.userBookingDetailsScreen,
-                              //     arguments: {"bookingId": booking.id});
+                            onPaymentTap: (){
+                              controller.createToyyibpayPayment(bookingId: booking.id ?? "");
                             },
 
                           ),
@@ -128,6 +127,7 @@ class UserMyBookingsScreen extends StatelessWidget {
                             dateTime: dateTime,
                             isPayment: false,
                             isChatOption: false,
+                            
                           ),
                         );
                       }

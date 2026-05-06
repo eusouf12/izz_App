@@ -9,6 +9,9 @@ import '../../view/screens/onboarding_screen/onboarding_screen.dart';
 import '../../view/screens/splash_screen/splash_screen.dart';
 import '../../view/screens/user_part/my_booking_screen/my_booking_screen.dart';
 import '../../view/screens/user_part/my_booking_screen/user_my_bookings_screen.dart';
+import '../../view/screens/user_part/my_booking_screen/payment_webview_screen.dart';
+
+
 import '../../view/screens/user_part/user_home_screen/book_your_slot_screen.dart';
 import '../../view/screens/user_part/user_home_screen/map_screen.dart';
 import '../../view/screens/user_part/user_home_screen/user_all_sports_screen.dart';
@@ -74,6 +77,9 @@ class AppRoutes {
   static const String otpScreen = "/OtpScreen";
   static const String setNewPassword = "/SetNewPassword";
   static const String userReviewScreen = "/UserReviewScreen";
+  static const String paymentWebViewScreen = "/PaymentWebViewScreen";
+
+
 
 
   ///===========================Vendor Part ==========================
@@ -130,6 +136,8 @@ class AppRoutes {
     GetPage(name: otpScreen, page: () => OtpScreen()),
     GetPage(name: setNewPassword, page: () => SetNewPassword()),
     GetPage(name: userReviewScreen, page: () => UserReviewScreen()),
+    GetPage(name: paymentWebViewScreen, page: () => const PaymentWebViewScreen()),
+
     GetPage(name: chatInboxScreen, page: () => ChatInboxScreen()),
     GetPage(name: fullscreenMapScreenNonEvent, page: () => FullscreenMapScreenNonEvent()),
 
