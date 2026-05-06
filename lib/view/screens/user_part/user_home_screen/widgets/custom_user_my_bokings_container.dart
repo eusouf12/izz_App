@@ -334,7 +334,7 @@ class CustomUserMyBokingsContainer extends StatelessWidget {
                     // --- Buttons Logic ---
                     isPayment == true
                         ? CustomButtonTwo(
-                            onTap: onChatTap ?? () {},
+                            onTap: onPaymentTap ?? () {},
                             title: "PROCEED TO PAYMENT",
                             textColor: AppColors.blue,
                             fillColor: Colors.transparent,

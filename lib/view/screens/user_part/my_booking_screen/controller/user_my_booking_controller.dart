@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:izz_atlas_app/service/api_url.dart';
+import '../../../../../core/app_routes/app_routes.dart';
 import '../../../../../service/api_client.dart';
 import '../model/booking_model.dart';
 
@@ -76,7 +79,7 @@ class UserMyBookingController extends GetxController {
     }
   }
 
-  /// ✅ ONLY NEW METHOD (VERY IMPORTANT)
+  ///ONLY NEW METHOD 
   String _mapStatus(String uiStatus) {
     switch (uiStatus) {
       case "Requested":
@@ -89,4 +92,25 @@ class UserMyBookingController extends GetxController {
         return "new-requests";
     }
   }
+
+
+  /// ================== Create Toyyibpay ==================
+  Future<void> createToyyibpayPayment({required String bookingId}) async {
+    try {
+      final response = await ApiClient.postData( ApiUrl.createToyyibpayPayment(id: bookingId), jsonEncode({}), );
+
+
+      if (response.statusCode == 200) {
+        final map = response.body;
+        final url = map["data"]["paymentUrl"];
+
+        /// Redirect to payment URL using WebView
+        Get.toNamed(AppRoutes.paymentWebViewScreen, arguments: url);
+
+      }
+    } catch (e) {
+      print("Error creating Toyyibpay payment: $e");
+    }
+  }
+
 }

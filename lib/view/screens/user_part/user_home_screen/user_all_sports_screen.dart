@@ -5,7 +5,6 @@ import 'package:izz_atlas_app/view/screens/user_part/user_home_screen/user_home_
 import '../../../../core/app_routes/app_routes.dart';
 import '../../../../utils/app_colors/app_colors.dart';
 import '../../../../utils/app_const/app_const.dart';
-import '../../../components/custom_guest_login_dialog/custom_guest_login_dialog.dart';
 import '../../../components/custom_loader/custom_loader.dart';
 import '../../../components/custom_netwrok_image/custom_network_image.dart';
 import '../../../components/custom_royel_appbar/custom_royel_appbar.dart';
